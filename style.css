@@ -1,0 +1,164 @@
+body {
+    font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+}
+h1, h2, h3 {
+    color: #333;
+    margin-top: 30px;
+}
+h1 { text-align: center; }
+hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
+
+/* Form Styles */
+#measurementForm {
+    background-color: #fdfdfd;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+#measurementForm label {
+    /* display: block; */ /* Adjusted for inline elements */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+#measurementForm input[type="text"],
+#measurementForm input[type="date"],
+#measurementForm input[type="number"],
+#measurementForm textarea,
+#measurementForm select {
+    /* width: calc(100% - 22px); */ /* Adjusted for inline/grid */
+    padding: 8px; /* Slightly smaller padding */
+    margin-bottom: 10px; /* Smaller margin */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+ #measurementForm input[type="number"] {
+    width: 100px; /* Fixed width for number inputs */
+ }
+ #measurementForm .full-width-input,
+ #measurementForm textarea,
+ #measurementForm select {
+     width: 100%; /* Ensure select and textarea take full grid width */
+ }
+ #measurementForm .inline-label-input label {
+     display: inline-block;
+     margin-right: 5px;
+     font-weight: normal;
+ }
+ #measurementForm .inline-label-input input[type="number"] {
+     width: 80px;
+     margin-right: 15px;
+ }
+
+
+#measurementForm input[type="file"] {
+     width: calc(100% - 22px);
+     margin-bottom: 15px;
+}
+#measurementForm textarea {
+    height: 60px; /* Smaller height */
+    resize: vertical;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px 20px; /* row-gap column-gap */
+}
+.form-group {
+    /* Container for label and input in grid */
+}
+ .form-group-inline {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     margin-bottom: 10px;
+     flex-wrap: wrap; /* Allow wrapping on small screens */
+ }
+  .form-group-inline label {
+      margin-bottom: 0; /* Remove bottom margin for inline groups */
+      white-space: nowrap;
+  }
+ .form-group-inline input[type="number"] {
+     margin-bottom: 0;
+ }
+ .calculated-value {
+     font-weight: bold;
+     color: #0056b3;
+     margin-left: 10px;
+ }
+
+/* Pricing Section */
+#pricingFieldset {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+    grid-column: 1 / -1; /* Span full width */
+}
+#pricingFieldset legend {
+    font-weight: bold;
+    color: #007bff;
+    padding: 0 10px;
+}
+.material-option {
+    border: 1px dashed #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    align-items: center;
+    gap: 10px;
+}
+.material-option label { font-weight: normal; margin-right: 5px;}
+.material-option input[type="radio"] { margin-right: 5px;}
+.material-option input[type="number"] { width: 80px; }
+.material-subtotal {
+     margin-left: auto; /* Push subtotal to the right */
+     font-weight: bold;
+     padding-left: 10px; /* Ensure space */
+}
+
+
+.checkbox-group label {
+    display: inline-block;
+    margin-right: 15px;
+    font-weight: normal;
+}
+ .checkbox-group input[type="checkbox"]{
+     margin-right: 5px;
+     vertical-align: middle;
+ }
+#generateBtn {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: block; /* Make button block */
+    width: 100%; /* Full width */
+    margin-top: 10px;
+}
+#generateBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Output/Preview Styles */
+#outputArea { margin-top: 20px; }
+.output-section { background-color: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin-bottom: 20px; display: none; }
+.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+.output-section p { margin: 8px 0; }
+.output-section strong { display: inline-block; min-width: 120px; color: #333; }
+
+/* Disabled input styling */
+input:disabled {
+    background-color: #eee;
+    cursor: not-allowed;
+}
