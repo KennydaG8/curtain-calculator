@@ -1,101 +1,120 @@
+/* --- Base Styles (for Desktop and larger screens) --- */
 body {
     font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
     margin: 20px;
     line-height: 1.6;
+    font-size: 16px; /* Base font size */
+    background-color: #f8f9fa; /* Light background */
+    color: #333;
 }
+
 h1, h2, h3 {
     color: #333;
     margin-top: 30px;
+    margin-bottom: 15px;
 }
-h1 { text-align: center; }
+h1 { text-align: center; font-size: 2em; }
+h2 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+h3 { font-size: 1.3em; }
+
 hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
 
-/* Form Styles */
+/* --- Form Styles --- */
 #measurementForm {
-    background-color: #fdfdfd;
-    padding: 20px;
-    border: 1px solid #eee;
+    background-color: #ffffff; /* White background for form */
+    padding: 25px;
+    border: 1px solid #dee2e6; /* Slightly softer border */
     border-radius: 8px;
     margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
 }
+
 #measurementForm label {
-    /* display: block; */ /* Adjusted for inline elements */
     margin-bottom: 5px;
     font-weight: bold;
-    color: #555;
+    color: #495057; /* Darker grey label */
+    display: inline-block; /* Allow side-by-side in grid */
 }
+
 #measurementForm input[type="text"],
 #measurementForm input[type="date"],
 #measurementForm input[type="number"],
+#measurementForm input[type="file"],
 #measurementForm textarea,
 #measurementForm select {
-    /* width: calc(100% - 22px); */ /* Adjusted for inline/grid */
-    padding: 8px; /* Slightly smaller padding */
-    margin-bottom: 10px; /* Smaller margin */
-    border: 1px solid #ccc;
+    padding: 10px; /* Consistent padding */
+    margin-bottom: 10px;
+    border: 1px solid #ced4da; /* Standard border */
     border-radius: 4px;
     box-sizing: border-box;
+    width: 100%; /* Default to full width within grid cell */
+    font-size: 1rem; /* Inherit base font size */
 }
- #measurementForm input[type="number"] {
-    width: 100px; /* Fixed width for number inputs */
- }
- #measurementForm .full-width-input,
- #measurementForm textarea,
- #measurementForm select {
-     width: 100%; /* Ensure select and textarea take full grid width */
- }
- #measurementForm .inline-label-input label {
-     display: inline-block;
-     margin-right: 5px;
-     font-weight: normal;
- }
- #measurementForm .inline-label-input input[type="number"] {
-     width: 80px;
-     margin-right: 15px;
- }
-
-
-#measurementForm input[type="file"] {
-     width: calc(100% - 22px);
-     margin-bottom: 15px;
+/* Specific width adjustments if needed */
+#measurementForm input[type="number"] {
+   /* Let grid handle width, maybe set max-width if needed */
+   max-width: 150px; /* Example max width */
 }
+
 #measurementForm textarea {
-    height: 60px; /* Smaller height */
-    resize: vertical;
+   height: 80px;
+   resize: vertical;
 }
+
+/* --- Grid Layout --- */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px 20px; /* row-gap column-gap */
+    /* Default: 2 columns for wider screens */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px 25px; /* row-gap column-gap */
 }
+
 .form-group {
     /* Container for label and input in grid */
+    display: flex;
+    flex-direction: column; /* Stack label above input by default */
 }
- .form-group-inline {
-     display: flex;
-     align-items: center;
-     gap: 10px;
-     margin-bottom: 10px;
-     flex-wrap: wrap; /* Allow wrapping on small screens */
+.form-group label {
+    margin-bottom: 5px;
+}
+
+/* Inline Group Styling */
+.form-group-inline {
+    display: flex;
+    align-items: center; /* Align items vertically centered */
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 10px; /* Space between elements */
+    margin-bottom: 10px;
+    grid-column: 1 / -1; /* Span full width in grid */
+    border: 1px solid #f0f0f0; /* Optional border for grouping */
+    padding: 10px;
+    border-radius: 4px;
+}
+.form-group-inline label {
+     margin-bottom: 0; /* No bottom margin for inline labels */
+     white-space: nowrap; /* Prevent label text wrapping */
+     flex-shrink: 0; /* Prevent label from shrinking */
  }
-  .form-group-inline label {
-      margin-bottom: 0; /* Remove bottom margin for inline groups */
-      white-space: nowrap;
-  }
- .form-group-inline input[type="number"] {
-     margin-bottom: 0;
- }
- .calculated-value {
-     font-weight: bold;
-     color: #0056b3;
-     margin-left: 10px;
- }
+.form-group-inline input[type="number"] {
+    margin-bottom: 0; /* No bottom margin */
+    width: 100px; /* Keep number inputs reasonably sized */
+    flex-grow: 1; /* Allow input to grow if space allows */
+    max-width: 120px;
+}
+.form-group-inline span#calculatedArea {
+    margin-left: 10px;
+}
+
+.calculated-value {
+    font-weight: bold;
+    color: #0056b3;
+}
 
 /* Pricing Section */
 #pricingFieldset {
     border: 1px solid #007bff;
     border-radius: 5px;
-    padding: 15px;
+    padding: 20px;
     margin-top: 20px;
     grid-column: 1 / -1; /* Span full width */
 }
@@ -103,36 +122,62 @@ hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
     font-weight: bold;
     color: #007bff;
     padding: 0 10px;
+    font-size: 1.1em;
 }
 .material-option {
     border: 1px dashed #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
     border-radius: 4px;
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 10px 15px; /* row and column gap */
 }
-.material-option label { font-weight: normal; margin-right: 5px;}
-.material-option input[type="radio"] { margin-right: 5px;}
-.material-option input[type="number"] { width: 80px; }
+.material-option label { font-weight: normal; }
+.material-option input[type="radio"] { margin-right: 5px; flex-shrink: 0;}
+.material-option input[type="number"] {
+    width: 90px; /* Slightly larger */
+    margin-bottom: 0; /* Align with others */
+}
 .material-subtotal {
-     margin-left: auto; /* Push subtotal to the right */
+     margin-left: auto; /* Push subtotal to the right on wider screens */
      font-weight: bold;
-     padding-left: 10px; /* Ensure space */
+     white-space: nowrap;
+     padding-left: 15px; /* Ensure space */
+     font-size: 1.1em;
+     color: #28a745; /* Green color for totals */
 }
 
+/* Installation Cost Inputs (inside inline group) */
+.inline-label-input {
+    /* Inherits from form-group-inline */
+}
+.inline-label-input label { /* Specific labels */
+    flex-basis: content; /* Size based on content */
+}
+.inline-label-input input[type="number"] { /* Specific inputs */
+     width: 90px;
+     flex-grow: 0; /* Don't grow */
+ }
+.inline-label-input select {
+    flex-grow: 1; /* Allow select to take up space */
+    min-width: 150px;
+}
 
+/* Checkbox Group */
 .checkbox-group label {
     display: inline-block;
     margin-right: 15px;
     font-weight: normal;
+    cursor: pointer;
 }
  .checkbox-group input[type="checkbox"]{
      margin-right: 5px;
      vertical-align: middle;
  }
+
+ /* Generate Button */
 #generateBtn {
     background-color: #007bff;
     color: white;
@@ -140,25 +185,129 @@ hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.1em; /* Slightly larger */
     transition: background-color 0.3s ease;
-    display: block; /* Make button block */
-    width: 100%; /* Full width */
-    margin-top: 10px;
+    display: block;
+    width: 100%;
+    margin-top: 20px; /* More space above button */
 }
 #generateBtn:hover {
     background-color: #0056b3;
 }
 
-/* Output/Preview Styles */
-#outputArea { margin-top: 20px; }
-.output-section { background-color: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin-bottom: 20px; display: none; }
-.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-.output-section p { margin: 8px 0; }
-.output-section strong { display: inline-block; min-width: 120px; color: #333; }
-
-/* Disabled input styling */
-input:disabled {
-    background-color: #eee;
-    cursor: not-allowed;
+/* --- Output/Preview Styles --- */
+#outputArea { margin-top: 30px; }
+.output-section {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none; /* Hidden by default */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
+.output-section h3 {
+    margin-top: 0;
+    color: #0056b3;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px; /* More space below heading */
+    font-size: 1.2em;
+}
+.output-section p { margin: 10px 0; } /* More spacing for paragraphs */
+.output-section strong {
+    display: inline-block;
+    min-width: 130px; /* Adjust label width */
+    color: #333;
+}
+
+/* --- Disabled input styling --- */
+input:disabled, select:disabled, textarea:disabled {
+    background-color: #e9ecef; /* Standard disabled color */
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- Responsive Styles for Mobile (<= 768px) --- */
+@media (max-width: 768px) {
+    body {
+        margin: 10px; /* Reduce body margin */
+        font-size: 15px; /* Adjust base font for mobile */
+    }
+
+    h1 { font-size: 1.7em; }
+    h2 { font-size: 1.4em; }
+    h3 { font-size: 1.15em; }
+
+    #measurementForm {
+        padding: 15px; /* Reduce form padding */
+    }
+
+    /* Force single column grid layout */
+    .form-grid {
+        grid-template-columns: 1fr; /* Single column */
+        gap: 15px 0; /* Only row gap needed */
+    }
+
+    /* Stack inline groups vertically */
+    .form-group-inline {
+        flex-direction: column; /* Stack vertically */
+        align-items: stretch; /* Stretch items full width */
+        padding: 10px;
+        gap: 12px; /* Adjust gap */
+    }
+    .form-group-inline label,
+    .form-group-inline input[type="number"],
+    .form-group-inline select,
+    .form-group-inline span {
+         width: 100% !important; /* Force full width */
+         max-width: none !important; /* Override max-width */
+         margin-right: 0;
+         text-align: left;
+         margin-bottom: 5px; /* Add margin between stacked items */
+    }
+     .form-group-inline span#calculatedArea {
+        margin-top: 5px;
+        text-align: left; /* Align text left */
+     }
+    .inline-label-input {
+         align-items: stretch; /* Ensure children stretch */
+     }
+
+
+    /* Stack material options */
+    .material-option {
+        flex-direction: column; /* Stack elements */
+        align-items: stretch; /* Stretch items */
+        gap: 8px;
+        padding: 12px;
+    }
+    /* Ensure radio/label are together */
+    .material-option div:first-of-type {
+        display: flex;
+        align-items: center;
+    }
+    .material-option .material-subtotal {
+        margin-left: 0; /* Remove auto margin */
+        width: 100%; /* Take full width */
+        text-align: right; /* Align subtotal text right */
+        margin-top: 8px; /* Add space */
+        padding-left: 0; /* Remove padding */
+    }
+    .material-option label {
+        display: block; /* Ensure labels take own line if needed */
+        width: 100%;
+    }
+     .material-option input[type="number"] {
+          width: 100% !important; /* Full width on mobile */
+          max-width: none !important;
+     }
+
+    /* Adjust output section padding */
+    .output-section {
+        padding: 15px;
+    }
+    .output-section strong {
+        min-width: 100px; /* Reduce label width */
+    }
+
+} /* End of @media query */
