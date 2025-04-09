@@ -1,197 +1,327 @@
 // Constants
 const CM_SQUARE_TO_TSAI = 918.09; // 1才 = 30.3cm * 30.3cm ≈ 918.09 cm²
+let windowCounter = 0; // Counter for unique window identifiers
 
-// --- Helper Functions ---
+// --- Helper Functions --- (Mostly same as before)
 
-/**
- * Gets the numeric value from an element ID safely.
- * @param {string} id - The ID of the HTML element.
- * @param {number} [defaultValue=0] - The value to return if parsing fails or value is not positive.
- * @returns {number} The parsed number or the default value.
- */
-function getNumberValue(id, defaultValue = 0) {
-    const element = document.getElementById(id);
-    const value = parseFloat(element?.value);
-    // Return the value if it's a non-negative number, otherwise the default
+function getNumberValue(element, defaultValue = 0) {
+    if (!element) return defaultValue;
+    const value = parseFloat(element.value);
     return !isNaN(value) && value >= 0 ? value : defaultValue;
 }
 
-/**
- * Gets the string value from an element ID safely. Handles radio buttons.
- * @param {string} id - The ID of the HTML element (can be one radio button in a group).
- * @returns {string} The element's value or an empty string.
- */
-function getValue(id) {
-   const element = document.getElementById(id);
-   if (!element) return '';
-
-   // Special handling for radio button groups
-   if (element.type === 'radio') {
-        const groupName = element.name;
-        const checkedRadio = document.querySelector(`input[name="${groupName}"]:checked`);
-        return checkedRadio ? checkedRadio.value : '';
-    }
-   return element.value;
+function getStringValue(element) {
+    if (!element) return '';
+    // Special handling for radio button groups within a context
+    if (element.type === 'radio') {
+         // Find the checked radio *within the same group* inside the closest section
+         const groupName = element.name;
+         const section = element.closest('.window-section'); // Find parent section
+         const checkedRadio = section ? section.querySelector(`input[name="${groupName}"]:checked`) : null;
+         return checkedRadio ? checkedRadio.value : '';
+     }
+    return element.value;
 }
 
-/**
- * Gets the filename from a file input element safely.
- * @param {string} id - The ID of the file input element.
- * @returns {string} The filename or '未選擇檔案'.
- */
- function getFileName(id) {
-     const element = document.getElementById(id);
+ function getFileNameFromInput(element) {
      return element?.files?.length > 0 ? element.files[0].name : '未選擇檔案';
  }
 
-/**
- * Creates a paragraph HTML string if the value is valid.
- * @param {string} label - The label text.
- * @param {string|number} value - The value to display.
- * @param {string} [unit=''] - An optional unit to append.
- * @returns {string} The HTML paragraph string or an empty string.
- */
 function createParagraph(label, value, unit = '') {
-    // Check if value exists or is 0 (valid number)
     const valueExists = value !== null && value !== undefined && value !== '';
     return valueExists ? `<p><strong>${label}:</strong> ${value} ${unit}</p>` : '';
 }
 
-/**
- * Formats a number as currency (rounded integer with commas).
- * @param {number} value - The number to format.
- * @returns {string} The formatted currency string.
- */
 function formatCurrency(value) {
-    return Math.round(value).toLocaleString(); // Format to integer with commas
+    return Math.round(value).toLocaleString();
 }
 
-// --- Core Calculation Logic ---
+
+// --- Core Window Calculation Logic ---
 
 /**
- * Calculates prices based on form inputs and updates the UI.
- * @returns {object} An object containing calculated values.
+ * Calculates prices for a specific window section based on its inputs.
+ * @param {HTMLElement} windowSection - The .window-section element.
+ * @returns {object} An object containing calculated values for this window.
  */
-function calculatePrice() {
-    const width = getNumberValue('windowWidth');
-    const height = getNumberValue('windowHeight');
+function calculatePriceForWindow(windowSection) {
+    if (!windowSection) return null;
+
+    const widthInput = windowSection.querySelector('.windowWidth');
+    const heightInput = windowSection.querySelector('.windowHeight');
+    const areaDisplay = windowSection.querySelector('.calculatedArea');
+
+    const width = getNumberValue(widthInput);
+    const height = getNumberValue(heightInput);
 
     // 1. Calculate Area (才)
     const areaCm2 = width * height;
     const areaTsai = areaCm2 > 0 ? (areaCm2 / CM_SQUARE_TO_TSAI) : 0;
-    const calculatedAreaEl = document.getElementById('calculatedArea');
-    if(calculatedAreaEl) calculatedAreaEl.textContent = areaTsai.toFixed(2); // Display area
+    if (areaDisplay) areaDisplay.textContent = areaTsai.toFixed(2);
 
-    // 2. Calculate Material Subtotals
-    const unitPrice1 = getNumberValue('material1UnitPrice');
-    const unitPrice2 = getNumberValue('material2UnitPrice');
-    const unitPrice3 = getNumberValue('material3UnitPrice');
-
-    const total1 = areaTsai * unitPrice1;
-    const total2 = areaTsai * unitPrice2;
-    const total3 = areaTsai * unitPrice3;
-
-    const mat1TotalEl = document.getElementById('material1Total');
-    const mat2TotalEl = document.getElementById('material2Total');
-    const mat3TotalEl = document.getElementById('material3Total');
-    if(mat1TotalEl) mat1TotalEl.textContent = formatCurrency(total1);
-    if(mat2TotalEl) mat2TotalEl.textContent = formatCurrency(total2);
-    if(mat3TotalEl) mat3TotalEl.textContent = formatCurrency(total3);
-
-    // 3. Determine Selected Material and its Price
-    const selectedMaterialValue = getValue('mat1'); // Get value from the radio group name
+    // 2. Calculate Material Subtotals for this window
     let selectedMaterialPrice = 0;
     let selectedUnitPrice = 0;
-    if (selectedMaterialValue === 'mat1') {
-        selectedMaterialPrice = total1;
-        selectedUnitPrice = unitPrice1;
-    } else if (selectedMaterialValue === 'mat2') {
-        selectedMaterialPrice = total2;
-        selectedUnitPrice = unitPrice2;
-    } else if (selectedMaterialValue === 'mat3') {
-        selectedMaterialPrice = total3;
-        selectedUnitPrice = unitPrice3;
-    }
+    const materialUnitPrices = windowSection.querySelectorAll('.materialUnitPrice');
+    const materialTotals = windowSection.querySelectorAll('.materialTotal');
+    const selectedMaterialRadio = windowSection.querySelector('.materialSelection:checked'); // Find checked radio in this section
+    const selectedMaterialValue = selectedMaterialRadio ? selectedMaterialRadio.value : null; // e.g., 'mat1', 'mat2'
 
-    // Update the disabled 'unitPrice' field
-    const unitPriceInput = document.getElementById('unitPrice');
-    if(unitPriceInput) unitPriceInput.value = selectedUnitPrice > 0 ? selectedUnitPrice.toFixed(2) : ''; // Show blank if 0
+    materialUnitPrices.forEach((input, index) => {
+        const matIndex = input.dataset.matIndex; // Get index (1, 2, or 3)
+        const unitPrice = getNumberValue(input);
+        const total = areaTsai * unitPrice;
+        const totalDisplay = windowSection.querySelector(`.materialTotal[data-mat-index="${matIndex}"]`);
+        if (totalDisplay) totalDisplay.textContent = formatCurrency(total);
 
+        // Check if this material is the selected one
+        if (selectedMaterialValue === `mat${matIndex}`) {
+            selectedMaterialPrice = total;
+            selectedUnitPrice = unitPrice;
+        }
+    });
 
-    // 4. Determine Installation Cost
-    const installMethod = getValue('installMethod');
+    // 3. Determine Installation Cost for this window
+    const installMethodSelect = windowSection.querySelector('.installMethod');
+    const installWallCostInput = windowSection.querySelector('.installWallCost');
+    const installCeilingCostInput = windowSection.querySelector('.installCeilingCost');
+
+    const installMethod = getStringValue(installMethodSelect);
     let installCost = 0;
     if (installMethod === '牆裝') {
-        installCost = getNumberValue('installWallCost');
+        installCost = getNumberValue(installWallCostInput);
     } else if (installMethod === '天花板裝') {
-        installCost = getNumberValue('installCeilingCost');
+        installCost = getNumberValue(installCeilingCostInput);
     }
-    // Add logic here if '其他' needs a cost calculation
 
-    // 5. Calculate Grand Total
-    const grandTotal = selectedMaterialPrice + installCost;
-    const subTotal = grandTotal; // Subtotal includes material + install cost
+    // 4. Calculate Grand Total for this window
+    const windowGrandTotal = selectedMaterialPrice + installCost;
+    const windowTotalDisplay = windowSection.querySelector('.windowGrandTotal');
+    if (windowTotalDisplay) windowTotalDisplay.textContent = formatCurrency(windowGrandTotal);
 
-    // Update disabled fields and display span
-    const subtotalInput = document.getElementById('subtotal');
-    const totalPriceInput = document.getElementById('totalPrice');
-    const grandTotalDisplay = document.getElementById('grandTotalDisplay');
-
-    if(subtotalInput) subtotalInput.value = subTotal > 0 ? subTotal.toFixed(0) : '';
-    if(totalPriceInput) totalPriceInput.value = grandTotal > 0 ? grandTotal.toFixed(0) : '';
-    if(grandTotalDisplay) grandTotalDisplay.textContent = formatCurrency(grandTotal);
-
-
-    // Return calculated values for quote generation
-    return {
+    // Return calculated values
+    const results = {
+        windowIndex: windowSection.dataset.windowIndex,
         areaTsai: areaTsai.toFixed(2),
         selectedUnitPrice: selectedUnitPrice,
         selectedMaterialPrice: Math.round(selectedMaterialPrice),
         installMethod: installMethod,
         installCost: Math.round(installCost),
-        grandTotal: Math.round(grandTotal)
+        windowGrandTotal: Math.round(windowGrandTotal)
+    };
+    // Store calculated total on the element for easy aggregation later
+    windowSection.dataset.calculatedTotal = results.windowGrandTotal;
+
+    return results;
+}
+
+/**
+ * Updates the overall grand total by summing totals from all window sections.
+ */
+function updateOverallTotal() {
+    let overallTotal = 0;
+    const windowSections = document.querySelectorAll('#windowsContainer .window-section');
+    windowSections.forEach(section => {
+        // Read the calculated total stored on the element's dataset
+        const windowTotal = parseFloat(section.dataset.calculatedTotal || '0');
+        overallTotal += windowTotal;
+    });
+
+    const overallDisplay = document.getElementById('overallGrandTotalDisplay');
+    if (overallDisplay) {
+        overallDisplay.textContent = '$' + formatCurrency(overallTotal);
+    }
+}
+
+// --- UI Interaction Functions ---
+
+/**
+ * Toggles the collapsed state of a window section.
+ * @param {Event} event - The click event object.
+ */
+function toggleWindowCollapse(event) {
+     // Find the header that was clicked, or the button's parent header
+    const header = event.target.closest('.window-header');
+    if (!header) return;
+
+    const content = header.nextElementSibling; // Assumes content div is immediately after header
+    const icon = header.querySelector('.toggle-window-btn i');
+
+    if (content && content.classList.contains('window-content')) {
+        content.classList.toggle('collapsed');
+        // Toggle icon direction (Font Awesome example)
+        if (icon) {
+            icon.classList.toggle('fa-chevron-up');
+            icon.classList.toggle('fa-chevron-down');
+        }
+    }
+}
+
+
+/**
+ * Creates and adds a new window section to the form.
+ */
+function addWindow() {
+    windowCounter++;
+    const template = document.getElementById('windowTemplate');
+    if (!template) {
+        console.error("Window template not found!");
+        return;
+    }
+
+    // Clone the template content
+    const newWindowFragment = template.content.cloneNode(true);
+    const newWindowSection = newWindowFragment.querySelector('.window-section');
+    if (!newWindowSection) return;
+
+    // --- Update identifiers and content ---
+    newWindowSection.dataset.windowIndex = windowCounter; // Store index
+
+    // Update title
+    const title = newWindowSection.querySelector('.window-title');
+    if (title) title.textContent = `窗戶 ${windowCounter}`;
+
+    // Update radio button group names to be unique for this section
+    const radioButtons = newWindowSection.querySelectorAll('.materialSelection');
+    radioButtons.forEach(radio => {
+        radio.name = `materialSelection_${windowCounter}`;
+    });
+
+    // --- Attach event listeners to the new elements ---
+    const inputsToRecalculate = newWindowSection.querySelectorAll('.windowWidth, .windowHeight, .materialUnitPrice, .installWallCost, .installCeilingCost');
+    inputsToRecalculate.forEach(input => {
+        input.addEventListener('input', (e) => {
+            const section = e.target.closest('.window-section');
+            calculatePriceForWindow(section);
+            updateOverallTotal(); // Update overall total whenever a window changes
+        });
+    });
+
+    const selectsToRecalculate = newWindowSection.querySelectorAll('.installMethod, .materialSelection');
+    selectsToRecalculate.forEach(select => {
+        select.addEventListener('change', (e) => {
+            const section = e.target.closest('.window-section');
+            calculatePriceForWindow(section);
+            updateOverallTotal(); // Update overall total whenever a window changes
+        });
+    });
+
+    // Attach listener for collapse/expand to the header
+    const header = newWindowSection.querySelector('.window-header');
+    if (header) {
+        header.addEventListener('click', toggleWindowCollapse);
+    }
+
+    // Collapse new windows by default (except the first one)
+    const content = newWindowSection.querySelector('.window-content');
+     const icon = newWindowSection.querySelector('.toggle-window-btn i');
+    if (windowCounter > 1 && content) {
+        content.classList.add('collapsed');
+         if (icon) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    } else {
+         if (icon) {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+         }
+         // Mark the first window if needed for styling/logic
+        newWindowSection.classList.add('first-window');
+
+    }
+
+
+    // Append the new section to the container
+    const container = document.getElementById('windowsContainer');
+    if (container) {
+        container.appendChild(newWindowFragment);
+    }
+
+    // Optional: Scroll to the new section
+    newWindowSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Initial calculation for the new window (optional, starts at 0)
+    // calculatePriceForWindow(newWindowSection);
+    updateOverallTotal(); // Ensure total reflects the new empty window (if needed)
+
+}
+
+
+// --- Document Generation Functions (Modified) ---
+
+/**
+ * Gathers data for a single window section.
+ * @param {HTMLElement} windowSection
+ * @returns {object} Object containing data for the window.
+ */
+function getWindowData(windowSection) {
+    if (!windowSection) return null;
+    const calculated = calculatePriceForWindow(windowSection); // Recalculate to be sure? Or read from dataset? Let's use dataset.
+    const windowTotal = parseFloat(windowSection.dataset.calculatedTotal || '0');
+
+    const selectedMaterialRadio = windowSection.querySelector('.materialSelection:checked');
+    const matIndex = selectedMaterialRadio ? selectedMaterialRadio.value.replace('mat','') : null;
+    const matLabelElement = selectedMaterialRadio ? windowSection.querySelector(`label[for="${selectedMaterialRadio.id}"]`) : null;
+    const selectedMaterialLabel = matLabelElement ? matLabelElement.textContent.replace(':','').trim() : 'N/A';
+    const unitPriceInput = matIndex ? windowSection.querySelector(`.materialUnitPrice[data-mat-index="${matIndex}"]`) : null;
+    const selectedUnitPrice = getNumberValue(unitPriceInput);
+
+
+    return {
+        index: windowSection.dataset.windowIndex,
+        floorSpace: getStringValue(windowSection.querySelector('.floorSpace')),
+        sitePhoto: getFileNameFromInput(windowSection.querySelector('.sitePhoto')),
+        windowWidth: getStringValue(windowSection.querySelector('.windowWidth')),
+        windowHeight: getStringValue(windowSection.querySelector('.windowHeight')),
+        boxDepth: getStringValue(windowSection.querySelector('.boxDepth')),
+        frameType: getStringValue(windowSection.querySelector('.frameType')),
+        curtainType: getStringValue(windowSection.querySelector('.curtainType')),
+        openingStyle: getStringValue(windowSection.querySelector('.openingStyle')),
+        trackInfo: getStringValue(windowSection.querySelector('.trackInfo')),
+        powerReq: getStringValue(windowSection.querySelector('.powerReq')),
+        installMethod: getStringValue(windowSection.querySelector('.installMethod')),
+        remarks: getStringValue(windowSection.querySelector('.remarks')),
+        installReminder: getStringValue(windowSection.querySelector('.installReminder')),
+        factoryNotes: getStringValue(windowSection.querySelector('.factoryNotes')),
+        // Calculated values specific to this window
+        areaTsai: windowSection.querySelector('.calculatedArea')?.textContent || '0.0',
+        selectedMaterialLabel: selectedMaterialLabel,
+        selectedUnitPrice: selectedUnitPrice,
+        installCost: parseFloat(windowSection.querySelector('.installWallCost, .installCeilingCost')?.value || '0'), // Approximation, refine if needed
+        windowGrandTotal: windowTotal,
     };
 }
 
-// --- Document Generation Functions ---
 
-/**
- * Generates the content for the Customer Quote preview section.
- * @param {object} data - Basic form data.
- * @param {object} calculated - Calculated pricing data.
- */
- function generateQuote(data, calculated) {
-    let content = createParagraph('專案名稱/地址', data.projectName);
-    content += createParagraph('丈量日期', data.measureDate);
-    content += createParagraph('丈量人員', data.measurePersonnel);
-    content += createParagraph('樓層/空間', data.floorSpace);
-    content += createParagraph('現場照片', data.sitePhoto);
-    content += createParagraph('窗戶寬度', data.windowWidth, 'cm');
-    content += createParagraph('窗戶高度', data.windowHeight, 'cm');
-    content += createParagraph('計算面積', calculated.areaTsai, '才');
-    content += createParagraph('窗簾盒/預留空間', data.boxDepth);
-    content += createParagraph('窗框/開窗方式', data.frameType);
-    content += createParagraph('窗簾種類', data.curtainType);
-    content += createParagraph('開法', data.openingStyle);
+function generateQuote(projectData, allWindowsData) {
+    let content = `<h2>${projectData.projectName || '專案報價單'}</h2>`;
+    content += createParagraph('丈量日期', projectData.measureDate);
+    content += createParagraph('丈量人員', projectData.measurePersonnel);
+    content += '<hr>';
 
-    content += '<hr style="border-top: 1px dashed #ccc;">';
-    content += `<h3>計價項目</h3>`;
-    const selectedMaterialRadio = document.querySelector('input[name="materialSelection"]:checked');
-    const selectedMaterialLabel = selectedMaterialRadio ? document.querySelector(`label[for="${selectedMaterialRadio.id}"]`)?.textContent.replace(':','').trim() : '未選擇';
-    content += createParagraph('選用材質', selectedMaterialLabel);
-    content += createParagraph('材質單價', calculated.selectedUnitPrice > 0 ? calculated.selectedUnitPrice : '-', '/才');
-    content += createParagraph('材質小計', formatCurrency(calculated.selectedMaterialPrice), '$');
-    content += createParagraph('安裝方式', calculated.installMethod);
-    content += createParagraph('安裝加價', formatCurrency(calculated.installCost), '$');
-    content += createParagraph('電源需求', data.powerReq);
-    content += '<hr style="border-top: 1px dashed #ccc;">';
+    let overallTotal = 0;
 
-    content += createParagraph('備註(現場狀況)', data.remarks);
-    if (data.installReminder) {
-         content += createParagraph('施工提醒', data.installReminder);
-    }
+    allWindowsData.forEach(winData => {
+        if (!winData) return;
+        overallTotal += winData.windowGrandTotal;
 
-    content += `<h3 style='text-align:right; margin-top: 20px;'>總計金額: $${formatCurrency(calculated.grandTotal)}</h3>`;
+        content += `<h4>窗戶 ${winData.index} (${winData.floorSpace || '未指定空間'})</h4>`;
+        content += createParagraph('窗戶寬度', winData.windowWidth, 'cm');
+        content += createParagraph('窗戶高度', winData.windowHeight, 'cm');
+        content += createParagraph('計算面積', winData.areaTsai, '才');
+        content += createParagraph('窗簾種類', winData.curtainType);
+        content += createParagraph('選用材質', winData.selectedMaterialLabel);
+        content += createParagraph('材質單價', winData.selectedUnitPrice > 0 ? winData.selectedUnitPrice : '-', '/才');
+        content += createParagraph('安裝方式', winData.installMethod);
+        content += createParagraph('安裝加價', formatCurrency(winData.installCost), '$');
+        if (winData.powerReq) content += createParagraph('電源需求', winData.powerReq);
+        if (winData.remarks) content += createParagraph('備註', winData.remarks);
+        content += `<p><strong>此窗小計:</strong> ${formatCurrency(winData.windowGrandTotal)} $</p>`;
+        content += '<br>'; // Add space between windows
+    });
+
+    content += `<div class="total-summary">專案總計金額: $${formatCurrency(overallTotal)}</div>`;
 
     const quoteContentEl = document.getElementById('quoteContent');
     const quoteOutputEl = document.getElementById('quoteOutput');
@@ -199,157 +329,120 @@ function calculatePrice() {
     if(quoteOutputEl) quoteOutputEl.style.display = 'block';
 }
 
-/**
- * Generates the content for the Factory Order preview section.
- * @param {object} data - Basic form data.
- */
-function generateFactoryOrder(data) {
-     let content = createParagraph('製作標示 (樓層/空間)', data.floorSpace);
-     content += createParagraph('窗戶寬度(cm)', data.windowWidth);
-     content += createParagraph('窗戶高度(cm)', data.windowHeight);
-     // Optional: Add calculated area if useful for factory
-     // content += createParagraph('計算面積(才)', calculatePrice().areaTsai);
-     content += createParagraph('軌道依據 (窗簾盒/預留)', data.boxDepth);
-     content += createParagraph('設計依據 (窗框/開窗)', data.frameType);
-     content += createParagraph('產品分類 (窗簾種類)', data.curtainType);
-     content += createParagraph('製作參數 (開法)', data.openingStyle);
-     content += createParagraph('核心資訊 (布料/布號)', data.fabricInfo); // Keep this for specifics
-     content += createParagraph('核心資訊 (紗料/紗號)', data.sheerInfo);
-     content += createParagraph('軌道加工 (種類/顏色)', data.trackInfo);
-     content += createParagraph('配件選擇 (安裝方式)', data.installMethod);
-      if (data.powerReq) {
-         content += createParagraph('關鍵製作 (電源需求)', data.powerReq);
-     }
-      if (data.factoryNotes) {
-         content += createParagraph('工廠備註', data.factoryNotes);
-     }
+function generateFactoryOrder(projectData, allWindowsData) {
+     let content = `<h2>工廠下單單 - ${projectData.projectName || '專案'}</h2>`;
+     content += createParagraph('下單日期', new Date().toLocaleDateString());
+     content += '<hr>';
 
-     const factoryContentEl = document.getElementById('factoryContent');
-     const factoryOutputEl = document.getElementById('factoryOutput');
-     if(factoryContentEl) factoryContentEl.innerHTML = content;
-     if(factoryOutputEl) factoryOutputEl.style.display = 'block';
+     allWindowsData.forEach(winData => {
+         if (!winData) return;
+         content += `<h4>生產項目: 窗戶 ${winData.index} (${winData.floorSpace || '未指定空間'})</h4>`;
+         content += createParagraph('窗戶寬度(cm)', winData.windowWidth);
+         content += createParagraph('窗戶高度(cm)', winData.windowHeight);
+         content += createParagraph('窗簾種類', winData.curtainType);
+         content += createParagraph('開法', winData.openingStyle);
+         // Include specific fabric/track info if needed (might need dedicated fields per material)
+         content += createParagraph('布料/布號', winData.fabricInfo || '(見材質選擇)');
+         content += createParagraph('紗料/紗號', winData.sheerInfo || '(見材質選擇)');
+         content += createParagraph('軌道', winData.trackInfo);
+         content += createParagraph('安裝方式', winData.installMethod);
+         if (winData.powerReq) content += createParagraph('電源需求', winData.powerReq);
+         if (winData.factoryNotes) content += createParagraph('工廠備註', winData.factoryNotes);
+         content += '<br>';
+     });
+
+    const factoryContentEl = document.getElementById('factoryContent');
+    const factoryOutputEl = document.getElementById('factoryOutput');
+    if(factoryContentEl) factoryContentEl.innerHTML = content;
+    if(factoryOutputEl) factoryOutputEl.style.display = 'block';
 }
 
-/**
- * Generates the content for the Installation Work Order preview section.
- * @param {object} data - Basic form data.
- * @param {object} calculated - Calculated pricing data (only installMethod needed here).
- */
-function generateInstallOrder(data, calculated) {
-      let content = createParagraph('定位 (專案名稱/地址)', data.projectName);
-      content += createParagraph('責任 (丈量日期)', data.measureDate);
-      content += createParagraph('責任 (丈量人員)', data.measurePersonnel);
-      content += createParagraph('位置 (樓層/空間)', data.floorSpace);
-      content += createParagraph('辨識 (現場照片)', data.sitePhoto);
-      content += createParagraph('用料核對 (寬度cm)', data.windowWidth);
-      content += createParagraph('用料核對 (高度cm)', data.windowHeight);
-      content += createParagraph('安裝確認 (窗簾盒/預留)', data.boxDepth);
-      content += createParagraph('安裝確認 (窗框/開窗)', data.frameType);
-      content += createParagraph('安裝項目 (窗簾種類)', data.curtainType);
-      content += createParagraph('安裝方向 (開法)', data.openingStyle);
-      content += createParagraph('物料核對 (布料/布號)', data.fabricInfo);
-      content += createParagraph('物料核對 (紗料/紗號)', data.sheerInfo);
-      content += createParagraph('物料核對 (軌道種類/顏色)', data.trackInfo);
-      content += createParagraph('施工方式 (安裝方式)', calculated.installMethod);
-      content += createParagraph('現場注意 (備註)', data.remarks);
-      if (data.installReminder) {
-           content += createParagraph('重要提醒 (施工提醒)', data.installReminder);
-      }
-       if (data.powerReq) {
-          content += createParagraph('電動相關 (電源需求)', data.powerReq);
-      }
+function generateInstallOrder(projectData, allWindowsData) {
+    let content = `<h2>安裝施工單 - ${projectData.projectName || '專案'}</h2>`;
+    content += createParagraph('專案地址', projectData.projectName); // Assuming name includes address for installer
+    content += createParagraph('丈量日期', projectData.measureDate);
+    content += createParagraph('丈量人員', projectData.measurePersonnel);
+    content += '<hr>';
 
-      const installContentEl = document.getElementById('installContent');
-      const installOutputEl = document.getElementById('installOutput');
-      if(installContentEl) installContentEl.innerHTML = content;
-      if(installOutputEl) installOutputEl.style.display = 'block';
- }
+     allWindowsData.forEach(winData => {
+         if (!winData) return;
+         content += `<h4>安裝位置: 窗戶 ${winData.index} (${winData.floorSpace || '未指定空間'})</h4>`;
+         content += createParagraph('現場照片參考', winData.sitePhoto);
+         content += createParagraph('窗戶寬度(cm)', winData.windowWidth);
+         content += createParagraph('窗戶高度(cm)', winData.windowHeight);
+         content += createParagraph('窗簾種類', winData.curtainType);
+         content += createParagraph('開法/方向', winData.openingStyle);
+         content += createParagraph('安裝方式', winData.installMethod);
+         content += createParagraph('軌道', winData.trackInfo);
+         content += createParagraph('布料/紗料核對', `${winData.fabricInfo || '依訂單'} / ${winData.sheerInfo || '依訂單'}`);
+         if (winData.powerReq) content += createParagraph('電源/測試', winData.powerReq);
+         if (winData.remarks) content += createParagraph('現場注意(備註)', winData.remarks);
+         if (winData.installReminder) content += createParagraph('施工提醒', winData.installReminder);
+          content += '<br>';
+     });
+
+    const installContentEl = document.getElementById('installContent');
+    const installOutputEl = document.getElementById('installOutput');
+    if(installContentEl) installContentEl.innerHTML = content;
+    if(installOutputEl) installOutputEl.style.display = 'block';
+}
+
 
 /**
  * Main function to handle generating document previews based on selections.
  */
 function handleGenerateDocuments() {
     // Hide outputs first
-    const quoteOutputEl = document.getElementById('quoteOutput');
-    const factoryOutputEl = document.getElementById('factoryOutput');
-    const installOutputEl = document.getElementById('installOutput');
+    document.getElementById('quoteOutput').style.display = 'none';
+    document.getElementById('factoryOutput').style.display = 'none';
+    document.getElementById('installOutput').style.display = 'none';
+    // Clear previous content safely
     const quoteContentEl = document.getElementById('quoteContent');
     const factoryContentEl = document.getElementById('factoryContent');
     const installContentEl = document.getElementById('installContent');
-
-    if(quoteOutputEl) quoteOutputEl.style.display = 'none';
-    if(factoryOutputEl) factoryOutputEl.style.display = 'none';
-    if(installOutputEl) installOutputEl.style.display = 'none';
     if(quoteContentEl) quoteContentEl.innerHTML = '';
     if(factoryContentEl) factoryContentEl.innerHTML = '';
     if(installContentEl) installContentEl.innerHTML = '';
 
 
-    // Perform final calculation before generating
-     const calculatedData = calculatePrice();
-
-    // Collect basic form data
-     const formData = {
-         projectName: getValue('projectName'),
-         measureDate: getValue('measureDate'),
-         measurePersonnel: getValue('measurePersonnel'),
-         floorSpace: getValue('floorSpace'),
-         sitePhoto: getFileName('sitePhoto'),
-         windowWidth: getValue('windowWidth'),
-         windowHeight: getValue('windowHeight'),
-         boxDepth: getValue('boxDepth'),
-         frameType: getValue('frameType'),
-         curtainType: getValue('curtainType'),
-         openingStyle: getValue('openingStyle'),
-         fabricInfo: getValue('fabricInfo'),
-         sheerInfo: getValue('sheerInfo'),
-         trackInfo: getValue('trackInfo'),
-         installMethod: getValue('installMethod'), // Base selection from dropdown
-         remarks: getValue('remarks'),
-         installReminder: getValue('installReminder'),
-         powerReq: getValue('powerReq'),
-         factoryNotes: getValue('factoryNotes')
+    // Gather overall project data
+    const projectData = {
+         projectName: getStringValue(document.getElementById('projectName')),
+         measureDate: getStringValue(document.getElementById('measureDate')),
+         measurePersonnel: getStringValue(document.getElementById('measurePersonnel')),
      };
 
+    // Gather data from all window sections
+    const allWindowsData = [];
+    const windowSections = document.querySelectorAll('#windowsContainer .window-section');
+    windowSections.forEach(section => {
+        allWindowsData.push(getWindowData(section)); // Gather data for each window
+    });
 
     // Check checkboxes and call generation functions
     if (document.getElementById('generateQuote')?.checked) {
-        generateQuote(formData, calculatedData);
+        generateQuote(projectData, allWindowsData);
     }
     if (document.getElementById('generateFactoryOrder')?.checked) {
-        generateFactoryOrder(formData);
+        generateFactoryOrder(projectData, allWindowsData);
     }
     if (document.getElementById('generateInstallOrder')?.checked) {
-        generateInstallOrder(formData, calculatedData);
+        generateInstallOrder(projectData, allWindowsData);
     }
 }
 
-// --- Event Listeners ---
-
-// Wait for the DOM to be fully loaded before attaching listeners
+// --- Event Listeners Setup ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Calculation triggers
-    const fieldsToRecalculate = [
-        'windowWidth', 'windowHeight', 'material1UnitPrice', 'material2UnitPrice',
-        'material3UnitPrice', 'installWallCost', 'installCeilingCost'
-    ];
-    fieldsToRecalculate.forEach(id => {
-        const element = document.getElementById(id);
-        element?.addEventListener('input', calculatePrice);
-    });
+    // Add first window automatically on load
+    addWindow();
 
-    const installMethodSelect = document.getElementById('installMethod');
-    installMethodSelect?.addEventListener('change', calculatePrice);
+    // Listener for the "Add Window" button
+    const addWindowBtn = document.getElementById('addWindowBtn');
+    addWindowBtn?.addEventListener('click', addWindow);
 
-    const materialRadios = document.querySelectorAll('input[name="materialSelection"]');
-    materialRadios.forEach(radio => {
-        radio.addEventListener('change', calculatePrice);
-    });
-
-    // Document generation trigger
+    // Listener for the main "Generate Documents" button
     const generateBtn = document.getElementById('generateBtn');
     generateBtn?.addEventListener('click', handleGenerateDocuments);
 
-    // Initial calculation on page load
-    calculatePrice();
+    // Note: Listeners for inputs *inside* window sections are added dynamically in addWindow()
 });

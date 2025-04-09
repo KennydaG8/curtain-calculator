@@ -1,313 +1,391 @@
-/* --- Base Styles (for Desktop and larger screens) --- */
+/* --- Base Styles --- */
 body {
     font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
     margin: 20px;
     line-height: 1.6;
-    font-size: 16px; /* Base font size */
-    background-color: #f8f9fa; /* Light background */
+    font-size: 16px;
+    background-color: #f8f9fa;
     color: #333;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #333;
-    margin-top: 30px;
+    margin-top: 25px;
     margin-bottom: 15px;
 }
-h1 { text-align: center; font-size: 2em; }
+h1 { text-align: center; font-size: 2em; margin-bottom: 30px;}
 h2 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
 h3 { font-size: 1.3em; }
+h4 { font-size: 1.1em; margin-top: 15px; }
 
-hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
+hr { margin: 30px 0; border: 0; border-top: 1px solid #eee; }
 
-/* --- Form Styles --- */
+/* --- Form & General Layout --- */
 #measurementForm {
-    background-color: #ffffff; /* White background for form */
-    padding: 25px;
-    border: 1px solid #dee2e6; /* Slightly softer border */
+    background-color: #ffffff;
+    padding: 20px; /* Reduced padding */
+    border: 1px solid #dee2e6;
     border-radius: 8px;
     margin-bottom: 30px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-#measurementForm label {
-    margin-bottom: 5px;
+/* --- Grid Layout --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted min size */
+    gap: 15px 20px; /* row-gap column-gap */
+}
+.project-info-grid { /* Specific grid for project info */
+     margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+.form-group label, fieldset legend {
+    margin-bottom: 6px; /* Consistent spacing */
     font-weight: bold;
-    color: #495057; /* Darker grey label */
-    display: inline-block; /* Allow side-by-side in grid */
+    color: #495057;
+    font-size: 0.95em; /* Slightly smaller labels */
 }
 
+/* Inputs */
 #measurementForm input[type="text"],
 #measurementForm input[type="date"],
 #measurementForm input[type="number"],
 #measurementForm input[type="file"],
 #measurementForm textarea,
 #measurementForm select {
-    padding: 10px; /* Consistent padding */
-    margin-bottom: 10px;
-    border: 1px solid #ced4da; /* Standard border */
+    padding: 9px; /* Slightly adjusted padding */
+    border: 1px solid #ced4da;
     border-radius: 4px;
     box-sizing: border-box;
-    width: 100%; /* Default to full width within grid cell */
-    font-size: 1rem; /* Inherit base font size */
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: 5px; /* Reduced margin */
 }
-/* Specific width adjustments if needed */
 #measurementForm input[type="number"] {
-   /* Let grid handle width, maybe set max-width if needed */
-   max-width: 150px; /* Example max width */
+   max-width: 130px; /* Limit number input width */
 }
-
 #measurementForm textarea {
-   height: 80px;
+   height: 70px;
    resize: vertical;
-}
-
-/* --- Grid Layout --- */
-.form-grid {
-    display: grid;
-    /* Default: 2 columns for wider screens */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px 25px; /* row-gap column-gap */
-}
-
-.form-group {
-    /* Container for label and input in grid */
-    display: flex;
-    flex-direction: column; /* Stack label above input by default */
-}
-.form-group label {
-    margin-bottom: 5px;
 }
 
 /* Inline Group Styling */
 .form-group-inline {
     display: flex;
-    align-items: center; /* Align items vertically centered */
-    flex-wrap: wrap; /* Allow wrapping */
-    gap: 10px; /* Space between elements */
-    margin-bottom: 10px;
-    grid-column: 1 / -1; /* Span full width in grid */
-    border: 1px solid #f0f0f0; /* Optional border for grouping */
-    padding: 10px;
-    border-radius: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 10px; /* Reduced gap */
+    padding: 8px 0; /* Padding top/bottom only */
 }
 .form-group-inline label {
-     margin-bottom: 0; /* No bottom margin for inline labels */
-     white-space: nowrap; /* Prevent label text wrapping */
-     flex-shrink: 0; /* Prevent label from shrinking */
+     margin-bottom: 0;
+     white-space: nowrap;
+     flex-shrink: 0;
+     font-weight: normal; /* Normal weight for inline labels */
  }
 .form-group-inline input[type="number"] {
-    margin-bottom: 0; /* No bottom margin */
-    width: 100px; /* Keep number inputs reasonably sized */
-    flex-grow: 1; /* Allow input to grow if space allows */
-    max-width: 120px;
+    margin-bottom: 0;
+    width: 90px; /* Smaller inline number inputs */
+    max-width: 100px;
+    flex-grow: 0; /* Don't grow */
 }
-.form-group-inline span#calculatedArea {
-    margin-left: 10px;
+.form-group-inline select {
+     margin-bottom: 0;
+     flex-grow: 1; /* Allow select to grow */
+     min-width: 130px;
+     max-width: 200px;
+ }
+.form-group-inline span { /* Area display */
+    margin-left: 8px;
+    font-size: 0.95em;
 }
-
 .calculated-value {
     font-weight: bold;
     color: #0056b3;
 }
 
-/* Pricing Section */
-#pricingFieldset {
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    padding: 20px;
-    margin-top: 20px;
-    grid-column: 1 / -1; /* Span full width */
-}
-#pricingFieldset legend {
-    font-weight: bold;
-    color: #007bff;
-    padding: 0 10px;
-    font-size: 1.1em;
-}
-.material-option {
-    border: 1px dashed #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
+/* Installation Cost Inputs */
+.install-method-group .inline-label-input {
+    border: 1px solid #f0f0f0;
+    padding: 10px;
     border-radius: 4px;
+    align-items: center; /* Align better */
+}
+
+/* --- Window Section Styling --- */
+#windowsContainer {
+    padding: 0;
+    margin: 0;
+}
+
+.window-section {
+    border: 1px solid #adb5bd; /* Clearer border */
+    border-radius: 6px;
+    margin-bottom: 25px;
+    background-color: #fff; /* Ensure background */
+    overflow: hidden; /* Needed for collapse animation */
+}
+
+.window-header {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px 15px; /* row and column gap */
+    padding: 10px 15px;
+    background-color: #e9ecef; /* Header background */
+    border-bottom: 1px solid #adb5bd;
+    cursor: pointer; /* Make header clickable */
 }
-.material-option label { font-weight: normal; }
-.material-option input[type="radio"] { margin-right: 5px; flex-shrink: 0;}
-.material-option input[type="number"] {
-    width: 90px; /* Slightly larger */
-    margin-bottom: 0; /* Align with others */
-}
-.material-subtotal {
-     margin-left: auto; /* Push subtotal to the right on wider screens */
-     font-weight: bold;
-     white-space: nowrap;
-     padding-left: 15px; /* Ensure space */
-     font-size: 1.1em;
-     color: #28a745; /* Green color for totals */
+.window-header h3 {
+    margin: 0;
+    font-size: 1.2em;
 }
 
-/* Installation Cost Inputs (inside inline group) */
-.inline-label-input {
-    /* Inherits from form-group-inline */
-}
-.inline-label-input label { /* Specific labels */
-    flex-basis: content; /* Size based on content */
-}
-.inline-label-input input[type="number"] { /* Specific inputs */
-     width: 90px;
-     flex-grow: 0; /* Don't grow */
- }
-.inline-label-input select {
-    flex-grow: 1; /* Allow select to take up space */
-    min-width: 150px;
-}
-
-/* Checkbox Group */
-.checkbox-group label {
-    display: inline-block;
-    margin-right: 15px;
-    font-weight: normal;
+.toggle-window-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
     cursor: pointer;
+    padding: 5px;
+    color: #495057;
 }
- .checkbox-group input[type="checkbox"]{
-     margin-right: 5px;
-     vertical-align: middle;
+.toggle-window-btn i {
+     transition: transform 0.3s ease;
+}
+.window-content.collapsed + .window-header .toggle-window-btn i, /* Icon for collapsed state */
+.window-section:not(.first-window) .window-content.collapsed + .window-header .toggle-window-btn i /* Handle initially collapsed */
+{
+    transform: rotate(-180deg);
+}
+
+
+.window-content {
+    padding: 15px;
+    border-top: none;
+    max-height: 5000px; /* Large enough height for animation */
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out; /* Smooth transition */
+}
+
+.window-content.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* border-top: none; */ /* Might not be needed if header has border */
+}
+
+
+/* Pricing within Window */
+.window-content .pricingFieldset {
+    border-color: #ced4da; /* Match other borders */
+    padding: 15px;
+    margin-top: 15px;
+}
+.window-content .pricingFieldset legend {
+    color: #495057;
+    font-size: 1em;
+}
+.window-content .material-option {
+    padding: 10px;
+    margin-bottom: 10px;
+    gap: 8px 10px;
+}
+.window-content .material-option label { font-size: 0.9em;}
+.window-content .material-option input[type="number"] { width: 80px; }
+.window-content .material-subtotal { font-size: 1em; padding-left: 10px;}
+
+.window-total-display {
+    text-align: right;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+}
+.window-total-display h4 {
+    margin: 0;
+    font-size: 1.15em;
+    color: #0056b3;
+}
+.window-total-display .calculated-value {
+     font-size: 1.1em;
  }
 
- /* Generate Button */
-#generateBtn {
+
+/* --- Buttons & Overall Total --- */
+.add-window-btn, .generate-docs-btn {
     background-color: #007bff;
     color: white;
-    padding: 12px 20px;
+    padding: 10px 18px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1.1em; /* Slightly larger */
+    font-size: 1em;
     transition: background-color 0.3s ease;
-    display: block;
-    width: 100%;
-    margin-top: 20px; /* More space above button */
+    display: inline-block; /* Allow side-by-side if needed */
+    width: auto; /* Auto width */
+    margin-top: 15px;
 }
-#generateBtn:hover {
-    background-color: #0056b3;
+.add-window-btn i { margin-right: 5px; }
+
+.generate-docs-btn {
+    background-color: #28a745; /* Green for generate */
+    width: 100%; /* Full width */
 }
+
+.add-window-btn:hover { background-color: #0056b3; }
+.generate-docs-btn:hover { background-color: #218838; }
+
+.overall-total-section {
+    text-align: right;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+.overall-total-section h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+    display: inline-block;
+    margin-right: 10px;
+}
+#overallGrandTotalDisplay {
+    font-size: 1.5em; /* Larger overall total */
+    color: #dc3545; /* Red for final total */
+}
+
+/* Generate Options */
+.generate-options {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+.generate-options h3 { margin-top: 0;}
+.checkbox-group label { display: inline-block; margin-right: 20px; font-weight: normal; cursor: pointer; }
+.checkbox-group input[type="checkbox"] { margin-right: 5px; vertical-align: middle; }
 
 /* --- Output/Preview Styles --- */
 #outputArea { margin-top: 30px; }
-.output-section {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: none; /* Hidden by default */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.output-section h3 {
-    margin-top: 0;
-    color: #0056b3;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px; /* More space below heading */
-    font-size: 1.2em;
-}
-.output-section p { margin: 10px 0; } /* More spacing for paragraphs */
-.output-section strong {
-    display: inline-block;
-    min-width: 130px; /* Adjust label width */
-    color: #333;
-}
+.output-section { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 5px; padding: 20px; margin-bottom: 20px; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 10px; font-size: 1.3em; } /* Larger preview headings */
+.output-section h4 { font-size: 1.1em; margin-top: 15px; color: #17a2b8; } /* Sub-headings for windows in preview */
+.output-section p { margin: 8px 0; }
+.output-section strong { display: inline-block; min-width: 120px; color: #333; font-weight: bold;} /* Bolder labels in preview */
+.output-section .total-summary { text-align: right; margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; font-size: 1.2em; font-weight: bold;}
 
-/* --- Disabled input styling --- */
-input:disabled, select:disabled, textarea:disabled {
-    background-color: #e9ecef; /* Standard disabled color */
-    cursor: not-allowed;
-    opacity: 0.7;
-}
+/* Disabled input styling */
+input:disabled, select:disabled, textarea:disabled { background-color: #e9ecef; cursor: not-allowed; opacity: 0.7; }
 
 /* --- Responsive Styles for Mobile (<= 768px) --- */
 @media (max-width: 768px) {
     body {
-        margin: 10px; /* Reduce body margin */
-        font-size: 15px; /* Adjust base font for mobile */
+        margin: 10px;
+        font-size: 14px; /* Slightly smaller base font */
     }
 
-    h1 { font-size: 1.7em; }
-    h2 { font-size: 1.4em; }
-    h3 { font-size: 1.15em; }
+    h1 { font-size: 1.6em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    h4 { font-size: 1.0em; }
 
-    #measurementForm {
-        padding: 15px; /* Reduce form padding */
+
+    #measurementForm, .output-section {
+        padding: 12px; /* Reduce padding */
     }
 
     /* Force single column grid layout */
     .form-grid {
         grid-template-columns: 1fr; /* Single column */
-        gap: 15px 0; /* Only row gap needed */
+        gap: 12px 0; /* Only row gap needed */
     }
 
     /* Stack inline groups vertically */
     .form-group-inline {
-        flex-direction: column; /* Stack vertically */
-        align-items: stretch; /* Stretch items full width */
-        padding: 10px;
-        gap: 12px; /* Adjust gap */
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px 0;
+        gap: 10px;
     }
-    .form-group-inline label,
-    .form-group-inline input[type="number"],
-    .form-group-inline select,
-    .form-group-inline span {
-         width: 100% !important; /* Force full width */
-         max-width: none !important; /* Override max-width */
+     .form-group-inline label,
+     .form-group-inline input[type="number"],
+     .form-group-inline select,
+     .form-group-inline span {
+         width: 100% !important;
+         max-width: none !important;
          margin-right: 0;
          text-align: left;
-         margin-bottom: 5px; /* Add margin between stacked items */
-    }
-     .form-group-inline span#calculatedArea {
-        margin-top: 5px;
-        text-align: left; /* Align text left */
+         margin-bottom: 5px;
      }
-    .inline-label-input {
-         align-items: stretch; /* Ensure children stretch */
+     .form-group-inline span#calculatedArea,
+     .window-content .dimensions-group span { /* Target area span */
+         margin-top: 5px;
+         text-align: left;
+         font-weight: bold;
      }
-
+     .install-method-group .inline-label-input {
+          padding: 10px; /* Add padding back inside group */
+     }
 
     /* Stack material options */
-    .material-option {
-        flex-direction: column; /* Stack elements */
-        align-items: stretch; /* Stretch items */
+    .window-content .material-option {
+        flex-direction: column;
+        align-items: stretch;
         gap: 8px;
-        padding: 12px;
+        padding: 10px;
     }
-    /* Ensure radio/label are together */
-    .material-option div:first-of-type {
-        display: flex;
-        align-items: center;
+    .window-content .material-option .material-subtotal {
+        margin-left: 0;
+        width: 100%;
+        text-align: right;
+        margin-top: 8px;
+        padding-left: 0;
     }
-    .material-option .material-subtotal {
-        margin-left: 0; /* Remove auto margin */
-        width: 100%; /* Take full width */
-        text-align: right; /* Align subtotal text right */
-        margin-top: 8px; /* Add space */
-        padding-left: 0; /* Remove padding */
-    }
-    .material-option label {
-        display: block; /* Ensure labels take own line if needed */
+    .window-content .material-option label {
+        display: block;
         width: 100%;
     }
-     .material-option input[type="number"] {
-          width: 100% !important; /* Full width on mobile */
+    .window-content .material-option input[type="number"] {
+          width: 100% !important;
           max-width: none !important;
      }
+    /* Ensure radio label is clickable */
+     .window-content .material-option > label:first-of-type {
+         display: inline-block; /* Allow radio and text on same "line" conceptually */
+         width: auto;
+         margin-left: 5px; /* Space after radio */
+     }
+      .window-content .material-option input[type="radio"] {
+         width: auto; /* Radio default width */
+         flex-shrink: 0;
+         margin-bottom: 0;
+     }
 
-    /* Adjust output section padding */
-    .output-section {
-        padding: 15px;
-    }
-    .output-section strong {
-        min-width: 100px; /* Reduce label width */
-    }
 
-} /* End of @media query */
+    /* Header adjustments */
+    .window-header {
+        padding: 8px 10px;
+    }
+     .window-header h3 {
+         font-size: 1.1em;
+     }
+     .toggle-window-btn {
+         font-size: 1.1em;
+     }
+
+    .window-content { padding: 12px; } /* Adjust content padding */
+
+    /* Overall Total */
+     .overall-total-section { text-align: center; }
+     .overall-total-section h3 { display: block; margin-bottom: 8px; text-align: center;}
+     #overallGrandTotalDisplay { font-size: 1.4em; }
+
+    /* Buttons */
+     .add-window-btn, .generate-docs-btn { font-size: 1em; padding: 10px 15px; }
+
+    /* Output section */
+    .output-section strong { min-width: 90px; } /* Adjust label width */
+}

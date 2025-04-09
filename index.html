@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>窗簾作業資訊系統 (含計價)</title>
+    <title>窗簾作業資訊系統 (多窗體計價)</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <h1>窗簾作業資訊系統 (含計價)</h1>
+    <h1>窗簾作業資訊系統 (多窗體計價)</h1>
 
-    <h2>1. 丈量與計價輸入區</h2>
     <form id="measurementForm">
-        <div class="form-grid">
+        <h2>1. 整體專案資訊</h2>
+        <div class="form-grid project-info-grid">
             <div class="form-group">
                 <label for="projectName">專案名稱 / 地址:</label>
                 <input type="text" id="projectName" name="projectName" class="full-width-input">
@@ -25,135 +26,156 @@
                 <label for="measurePersonnel">丈量人員:</label>
                 <input type="text" id="measurePersonnel" name="measurePersonnel" class="full-width-input">
             </div>
-            <div class="form-group">
-                <label for="floorSpace">樓層與空間名稱:</label>
-                <input type="text" id="floorSpace" name="floorSpace" placeholder="例如：2F 主臥" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="sitePhoto">現場照片:</label>
-                <input type="file" id="sitePhoto" name="sitePhoto" accept="image/*" class="full-width-input">
+        </div>
+
+        <hr>
+
+        <h2>2. 各窗戶明細</h2>
+        <div id="windowsContainer">
             </div>
 
-            <div class="form-group form-group-inline">
-                <label for="windowWidth">窗寬(cm):</label>
-                <input type="number" id="windowWidth" name="windowWidth" step="any"> <label for="windowHeight">窗高(cm):</label>
-                <input type="number" id="windowHeight" name="windowHeight" step="any"> <span>面積:<span id="calculatedArea" class="calculated-value">0.0</span> 才</span>
-            </div>
+        <button type="button" id="addWindowBtn" class="add-window-btn">
+            <i class="fas fa-plus"></i> 新增窗戶
+        </button>
 
-            <div class="form-group">
-                <label for="boxDepth">窗簾盒深度 / 預留:</label>
-                <input type="text" id="boxDepth" name="boxDepth" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="frameType">窗框類型與開窗:</label>
-                <input type="text" id="frameType" name="frameType" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="curtainType">窗簾種類:</label>
-                 <input type="text" id="curtainType" name="curtainType" placeholder="例如：布簾、捲簾 (此處不影響計價)" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="openingStyle">開法:</label>
-                <input type="text" id="openingStyle" name="openingStyle" placeholder="例如：單開、雙開" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="fabricInfo">布料 / 布號:</label>
-                <input type="text" id="fabricInfo" name="fabricInfo" placeholder="(若選下方材質計價，此處可為補充)" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="sheerInfo">紗料 / 紗號:</label>
-                <input type="text" id="sheerInfo" name="sheerInfo" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="trackInfo">軌道種類 / 顏色:</label>
-                <input type="text" id="trackInfo" name="trackInfo" class="full-width-input">
-            </div>
-             <div class="form-group">
-                <label for="powerReq">電源需求:</label>
-                <input type="text" id="powerReq" name="powerReq" placeholder="若為電動則填寫" class="full-width-input">
-            </div>
+        <hr>
 
+        <div class="overall-total-section">
+            <h3>專案總計金額:</h3>
+            <span id="overallGrandTotalDisplay" class="calculated-value">$0</span>
+        </div>
 
-             <div class="form-group" style="grid-column: 1 / -1;">
-                <label for="installMethod">安裝方式:</label>
-                 <div class="inline-label-input">
-                     <select id="installMethod" name="installMethod"> <option value="">-- 請選擇 --</option>
-                         <option value="牆裝">牆裝</option>
-                         <option value="天花板裝">天花板裝</option>
-                         <option value="其他">其他</option>
-                     </select>
-                     <label for="installWallCost">牆裝加價:</label>
-                     <input type="number" id="installWallCost" name="installWallCost" value="0" step="any"> <label for="installCeilingCost">天花板裝加價:</label>
-                     <input type="number" id="installCeilingCost" name="installCeilingCost" value="0" step="any"> </div>
+        <hr style="margin: 10px 0;">
+
+        <div class="generate-options">
+             <h3>選擇要生成的單據：</h3>
+             <div class="checkbox-group">
+                 <label> <input type="checkbox" id="generateQuote" name="generateDoc" value="quote"> 客戶報價單 </label>
+                 <label> <input type="checkbox" id="generateFactoryOrder" name="generateDoc" value="factory"> 工廠下單單 </label>
+                 <label> <input type="checkbox" id="generateInstallOrder" name="generateDoc" value="install"> 安裝施工單 </label>
             </div>
+         </div>
 
-            <fieldset id="pricingFieldset">
-                <legend>窗簾材質與計價</legend>
-                <div class="material-option">
-                    <input type="radio" id="mat1" name="materialSelection" value="mat1" checked> <label for="mat1">材質一 (例: 棉麻):</label>
-                    <label for="material1UnitPrice">單價/才:</label>
-                    <input type="number" id="material1UnitPrice" name="material1UnitPrice" value="0" step="any"> <span class="material-subtotal">小計: $<span id="material1Total">0</span></span>
-                </div>
-                <div class="material-option">
-                    <input type="radio" id="mat2" name="materialSelection" value="mat2"> <label for="mat2">材質二 (例: 聚酯纖維):</label>
-                    <label for="material2UnitPrice">單價/才:</label>
-                    <input type="number" id="material2UnitPrice" name="material2UnitPrice" value="0" step="any"> <span class="material-subtotal">小計: $<span id="material2Total">0</span></span>
-                </div>
-                 <div class="material-option">
-                    <input type="radio" id="mat3" name="materialSelection" value="mat3"> <label for="mat3">材質三 (例: 遮光布):</label>
-                    <label for="material3UnitPrice">單價/才:</label>
-                    <input type="number" id="material3UnitPrice" name="material3UnitPrice" value="0" step="any"> <span class="material-subtotal">小計: $<span id="material3Total">0</span></span>
-                </div>
-            </fieldset>
+        <div style="margin-top: 10px;">
+            <button type="button" id="generateBtn" class="generate-docs-btn">生成單據預覽</button>
+        </div>
 
-            <div class="form-group" style="grid-column: 1 / -1;">
-                 <label for="remarks">備註 (現場狀況):</label>
-                 <textarea id="remarks" name="remarks" class="full-width-input"></textarea>
-             </div>
-              <div class="form-group" style="grid-column: 1 / -1;">
-                 <label for="installReminder">施工提醒 (高樓等):</label>
-                 <textarea id="installReminder" name="installReminder" class="full-width-input"></textarea>
-             </div>
-             <div class="form-group" style="grid-column: 1 / -1;">
-                 <label for="factoryNotes">工廠備註 (內部用):</label>
-                 <textarea id="factoryNotes" name="factoryNotes" class="full-width-input"></textarea>
-             </div>
+    </form>
 
-            <div class="form-group">
-                <label for="unitPrice">單價 (已選材質):</label>
-                <input type="number" id="unitPrice" name="unitPrice" step="any" disabled>
-            </div>
-           <div class="form-group">
-                <label for="subtotal">小計 (材質+安裝):</label>
-                <input type="number" id="subtotal" name="subtotal" step="any" disabled>
-            </div>
-            <div class="form-group">
-                <label for="totalPrice">總價:</label>
-                <input type="number" id="totalPrice" name="totalPrice" step="any" disabled>
-                <strong style="margin-left: 10px; font-size: 1.2em;">總計: $<span id="grandTotalDisplay" class="calculated-value">0</span></strong>
-            </div>
-
-            <hr style="margin: 10px 0; grid-column: 1 / -1;">
-
-            <div style="grid-column: 1 / -1;">
-                 <h3>選擇要生成的單據：</h3>
-                 <div class="checkbox-group">
-                     <label> <input type="checkbox" id="generateQuote" name="generateDoc" value="quote"> 客戶報價單 </label>
-                     <label> <input type="checkbox" id="generateFactoryOrder" name="generateDoc" value="factory"> 工廠下單單 </label>
-                     <label> <input type="checkbox" id="generateInstallOrder" name="generateDoc" value="install"> 安裝施工單 </label>
-                </div>
-             </div>
-
-            <div style="grid-column: 1 / -1; margin-top: 10px;">
-                <button type="button" id="generateBtn">生成單據預覽</button> </div>
-        </div> </form>
-
-    <h2>2. 生成單據預覽區</h2>
+    <h2>3. 生成單據預覽區</h2>
     <div id="outputArea">
         <div id="quoteOutput" class="output-section"><h3>客戶報價單 (預覽)</h3><div id="quoteContent"></div></div>
         <div id="factoryOutput" class="output-section"><h3>工廠下單單 (預覽)</h3><div id="factoryContent"></div></div>
         <div id="installOutput" class="output-section"><h3>安裝施工單 (預覽)</h3><div id="installContent"></div></div>
     </div>
+
+    <template id="windowTemplate">
+        <div class="window-section" data-window-index="{{index}}">
+            <div class="window-header">
+                <h3 class="window-title">窗戶 {{index}}</h3>
+                <button type="button" class="toggle-window-btn" title="展開/摺疊">
+                    <i class="fas fa-chevron-up"></i> </button>
+            </div>
+            <div class="window-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>樓層與空間名稱:</label>
+                        <input type="text" class="floorSpace full-width-input" placeholder="例如：2F 主臥">
+                    </div>
+                    <div class="form-group">
+                        <label>現場照片:</label>
+                        <input type="file" class="sitePhoto full-width-input" accept="image/*">
+                    </div>
+                    <div class="form-group form-group-inline dimensions-group">
+                        <label>窗寬(cm):</label>
+                        <input type="number" class="windowWidth" step="any">
+                        <label>窗高(cm):</label>
+                        <input type="number" class="windowHeight" step="any">
+                        <span>面積:<span class="calculatedArea calculated-value">0.0</span> 才</span>
+                    </div>
+                    <div class="form-group">
+                        <label>窗簾盒深度 / 預留:</label>
+                        <input type="text" class="boxDepth full-width-input">
+                    </div>
+                    <div class="form-group">
+                        <label>窗框類型與開窗:</label>
+                        <input type="text" class="frameType full-width-input">
+                    </div>
+                    <div class="form-group">
+                        <label>窗簾種類:</label>
+                        <input type="text" class="curtainType full-width-input" placeholder="例: 布簾+紗簾">
+                    </div>
+                     <div class="form-group">
+                        <label>開法:</label>
+                        <input type="text" class="openingStyle full-width-input" placeholder="例: 雙開">
+                    </div>
+                    <div class="form-group">
+                        <label>軌道種類 / 顏色:</label>
+                        <input type="text" class="trackInfo full-width-input">
+                    </div>
+                     <div class="form-group">
+                         <label>電源需求:</label>
+                         <input type="text" class="powerReq full-width-input" placeholder="若為電動則填寫">
+                     </div>
+                    <div class="form-group install-method-group" style="grid-column: 1 / -1;">
+                        <label>安裝方式:</label>
+                         <div class="inline-label-input">
+                             <select class="installMethod">
+                                 <option value="">-- 請選擇 --</option>
+                                 <option value="牆裝">牆裝</option>
+                                 <option value="天花板裝">天花板裝</option>
+                                 <option value="其他">其他</option>
+                             </select>
+                             <label>牆裝加價:</label>
+                             <input type="number" class="installWallCost" value="0" step="any">
+                             <label>天花板裝加價:</label>
+                             <input type="number" class="installCeilingCost" value="0" step="any">
+                         </div>
+                    </div>
+
+                    <fieldset class="pricingFieldset" style="grid-column: 1 / -1;">
+                        <legend>窗簾材質與計價</legend>
+                        <div class="material-option">
+                             <input type="radio" name="materialSelection_{{index}}" class="materialSelection" value="mat1" checked>
+                             <label>材質一 (例: 棉麻):</label>
+                             <label>單價/才:</label>
+                             <input type="number" class="materialUnitPrice" data-mat-index="1" value="0" step="any">
+                             <span class="material-subtotal">小計: $<span class="materialTotal" data-mat-index="1">0</span></span>
+                         </div>
+                         <div class="material-option">
+                             <input type="radio" name="materialSelection_{{index}}" class="materialSelection" value="mat2">
+                             <label>材質二 (例: 聚酯纖維):</label>
+                             <label>單價/才:</label>
+                             <input type="number" class="materialUnitPrice" data-mat-index="2" value="0" step="any">
+                             <span class="material-subtotal">小計: $<span class="materialTotal" data-mat-index="2">0</span></span>
+                         </div>
+                          <div class="material-option">
+                             <input type="radio" name="materialSelection_{{index}}" class="materialSelection" value="mat3">
+                             <label>材質三 (例: 遮光布):</label>
+                             <label>單價/才:</label>
+                             <input type="number" class="materialUnitPrice" data-mat-index="3" value="0" step="any">
+                             <span class="material-subtotal">小計: $<span class="materialTotal" data-mat-index="3">0</span></span>
+                         </div>
+                    </fieldset>
+
+                     <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>備註 (現場狀況):</label>
+                        <textarea class="remarks full-width-input"></textarea>
+                    </div>
+                     <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>施工提醒:</label>
+                        <textarea class="installReminder full-width-input"></textarea>
+                    </div>
+                     <div class="form-group" style="grid-column: 1 / -1;">
+                         <label>工廠備註 (內部用):</label>
+                         <textarea class="factoryNotes full-width-input"></textarea>
+                     </div>
+
+                    <div class="window-total-display" style="grid-column: 1 / -1;">
+                        <h4>此窗總計: $<span class="windowGrandTotal calculated-value">0</span></h4>
+                    </div>
+
+                </div></div></div></template>
 
     <script src="script.js"></script>
 </body>
