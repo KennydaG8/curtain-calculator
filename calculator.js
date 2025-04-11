@@ -1,14 +1,14 @@
 // calculator.js
 import { CM_SQUARE_TO_TSAI } from './constants.js';
-import { getNumberValue, getStringValue, formatCurrency } from './utils.js';
+import { getNumberValue } from './utils.js';
 
 /**
- * Calculates prices for a specific window section based on its inputs.
+ * Calculates ONLY the area for a specific window section.
+ * Pricing logic is removed for now.
  * @param {HTMLElement} windowSection - The .window-section element.
- * @returns {object|null} An object containing calculated values for this window, or null if error.
  */
-export function calculatePriceForWindow(windowSection) {
-    if (!windowSection) return null;
+export function calculateAreaForWindow(windowSection) {
+    if (!windowSection) return;
 
     const widthInput = windowSection.querySelector('.windowWidth');
     const heightInput = windowSection.querySelector('.windowHeight');
@@ -17,78 +17,35 @@ export function calculatePriceForWindow(windowSection) {
     const width = getNumberValue(widthInput);
     const height = getNumberValue(heightInput);
 
-    // 1. Calculate Area (才)
     const areaCm2 = width * height;
     const areaTsai = areaCm2 > 0 ? (areaCm2 / CM_SQUARE_TO_TSAI) : 0;
+
     if (areaDisplay) areaDisplay.textContent = areaTsai.toFixed(2);
 
-    // 2. Calculate Material Subtotals
-    let selectedMaterialPrice = 0;
-    let selectedUnitPrice = 0;
-    const materialUnitPrices = windowSection.querySelectorAll('.materialUnitPrice');
-    // Ensure selectedMaterialRadio is correctly identified for the specific section
-    const radioName = `materialSelection_${windowSection.dataset.windowIndex}`; // Assuming index is set
-    const selectedMaterialRadio = windowSection.querySelector(`input[name="${radioName}"]:checked`);
-    const selectedMaterialValue = selectedMaterialRadio ? selectedMaterialRadio.value : null;
+    // Store area on dataset if needed later
+    windowSection.dataset.calculatedArea = areaTsai.toFixed(2);
 
-    materialUnitPrices.forEach(input => {
-        const matIndex = input.dataset.matIndex;
-        const unitPrice = getNumberValue(input);
-        const total = areaTsai * unitPrice;
-        const totalDisplay = windowSection.querySelector(`.materialTotal[data-mat-index="${matIndex}"]`);
-        if (totalDisplay) totalDisplay.textContent = formatCurrency(total);
-
-        if (selectedMaterialValue === `mat${matIndex}`) {
-            selectedMaterialPrice = total;
-            selectedUnitPrice = unitPrice;
-        }
-    });
-
-    // 3. Determine Installation Cost
-    const installMethodSelect = windowSection.querySelector('.installMethod');
-    const installWallCostInput = windowSection.querySelector('.installWallCost');
-    const installCeilingCostInput = windowSection.querySelector('.installCeilingCost');
-
-    const installMethod = getStringValue(installMethodSelect);
-    let installCost = 0;
-    if (installMethod === '牆裝') {
-        installCost = getNumberValue(installWallCostInput);
-    } else if (installMethod === '天花板裝') {
-        installCost = getNumberValue(installCeilingCostInput);
-    }
-
-    // 4. Calculate Grand Total for this window
-    const windowGrandTotal = selectedMaterialPrice + installCost;
-    const windowTotalDisplay = windowSection.querySelector('.windowGrandTotal');
-    if (windowTotalDisplay) windowTotalDisplay.textContent = formatCurrency(windowGrandTotal);
-
-    // Store calculated total on the element for easy aggregation
-    windowSection.dataset.calculatedTotal = Math.round(windowGrandTotal).toString();
-
-    return {
-        windowIndex: windowSection.dataset.windowIndex,
-        areaTsai: areaTsai.toFixed(2),
-        selectedUnitPrice: selectedUnitPrice,
-        selectedMaterialPrice: Math.round(selectedMaterialPrice),
-        installMethod: installMethod,
-        installCost: Math.round(installCost),
-        windowGrandTotal: Math.round(windowGrandTotal)
-    };
+    // No pricing calculation here anymore
+    windowSection.dataset.calculatedTotal = '0'; // Set total to 0
 }
 
 /**
- * Updates the overall grand total display by summing totals from all window sections.
+ * Updates the overall grand total display.
+ * Currently does nothing as pricing is removed.
  */
 export function updateOverallTotal() {
-    let overallTotal = 0;
-    const windowSections = document.querySelectorAll('#windowsContainer .window-section');
-    windowSections.forEach(section => {
-        const windowTotal = parseFloat(section.dataset.calculatedTotal || '0');
-        overallTotal += windowTotal;
-    });
-
+    // let overallTotal = 0;
+    // const windowSections = document.querySelectorAll('#windowsContainer .window-section');
+    // windowSections.forEach(section => {
+    //     const windowTotal = parseFloat(section.dataset.calculatedTotal || '0');
+    //     overallTotal += windowTotal;
+    // });
     const overallDisplay = document.getElementById('overallGrandTotalDisplay');
     if (overallDisplay) {
-        overallDisplay.textContent = '$' + formatCurrency(overallTotal);
+        overallDisplay.textContent = ''; // Clear overall total for now
+        overallDisplay.style.display = 'none'; // Hide it
     }
+     const overallTotalSection = document.querySelector('.overall-total-section');
+     if(overallTotalSection) overallTotalSection.style.display = 'none'; // Hide the whole section
+
 }

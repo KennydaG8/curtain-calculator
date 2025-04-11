@@ -1,391 +1,285 @@
-/* --- Base Styles --- */
 body {
     font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
     margin: 20px;
     line-height: 1.6;
-    font-size: 16px;
-    background-color: #f8f9fa;
-    color: #333;
 }
-
-h1, h2, h3, h4 {
+h1, h2, h3 {
     color: #333;
-    margin-top: 25px;
-    margin-bottom: 15px;
-}
+    margin-top: 30px;
+}/* --- Base Styles --- (Mostly Same) */
+body { font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif; margin: 20px; line-height: 1.6; font-size: 16px; background-color: #f8f9fa; color: #333; }
+h1, h2, h3, h4 { color: #333; margin-top: 25px; margin-bottom: 15px; }
 h1 { text-align: center; font-size: 2em; margin-bottom: 30px;}
 h2 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
 h3 { font-size: 1.3em; }
 h4 { font-size: 1.1em; margin-top: 15px; }
-
 hr { margin: 30px 0; border: 0; border-top: 1px solid #eee; }
 
 /* --- Form & General Layout --- */
-#measurementForm {
-    background-color: #ffffff;
-    padding: 20px; /* Reduced padding */
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+#measurementForm { background-color: #ffffff; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
 /* --- Grid Layout --- */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted min size */
-    gap: 15px 20px; /* row-gap column-gap */
-}
-.project-info-grid { /* Specific grid for project info */
-     margin-bottom: 20px;
-}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px 20px; }
+.project-info-grid { margin-bottom: 20px; }
+.overall-notes-grid { margin-top: 20px;} /* Style for overall notes */
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-.form-group label, fieldset legend {
-    margin-bottom: 6px; /* Consistent spacing */
-    font-weight: bold;
-    color: #495057;
-    font-size: 0.95em; /* Slightly smaller labels */
-}
+.form-group { display: flex; flex-direction: column; }
+.form-group label, fieldset legend { margin-bottom: 6px; font-weight: bold; color: #495057; font-size: 0.95em; }
 
-/* Inputs */
+/* Radio Group Styling */
+.radio-group { display: flex; gap: 15px; /* Space between radios */ margin-top: 5px; flex-wrap: wrap;}
+.radio-group label { font-weight: normal; cursor: pointer; display: inline-flex; align-items: center;}
+.radio-group input[type="radio"] { margin-right: 5px; }
+
+/* Inputs (Adjusted) */
 #measurementForm input[type="text"],
 #measurementForm input[type="date"],
 #measurementForm input[type="number"],
 #measurementForm input[type="file"],
 #measurementForm textarea,
-#measurementForm select {
-    padding: 9px; /* Slightly adjusted padding */
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
-    width: 100%;
-    font-size: 1rem;
-    margin-bottom: 5px; /* Reduced margin */
-}
-#measurementForm input[type="number"] {
-   max-width: 130px; /* Limit number input width */
-}
-#measurementForm textarea {
-   height: 70px;
-   resize: vertical;
-}
+#measurementForm select { padding: 9px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; width: 100%; font-size: 1rem; margin-bottom: 5px; }
+#measurementForm input[type="number"] { max-width: 130px; }
+/* Specific width for curtain box depth input */
+.curtainBoxDepth { max-width: 100px !important; }
 
-/* Inline Group Styling */
-.form-group-inline {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px 10px; /* Reduced gap */
-    padding: 8px 0; /* Padding top/bottom only */
-}
-.form-group-inline label {
-     margin-bottom: 0;
-     white-space: nowrap;
-     flex-shrink: 0;
-     font-weight: normal; /* Normal weight for inline labels */
- }
-.form-group-inline input[type="number"] {
-    margin-bottom: 0;
-    width: 90px; /* Smaller inline number inputs */
-    max-width: 100px;
-    flex-grow: 0; /* Don't grow */
-}
-.form-group-inline select {
-     margin-bottom: 0;
-     flex-grow: 1; /* Allow select to grow */
-     min-width: 130px;
-     max-width: 200px;
- }
-.form-group-inline span { /* Area display */
-    margin-left: 8px;
-    font-size: 0.95em;
-}
-.calculated-value {
-    font-weight: bold;
-    color: #0056b3;
-}
+#measurementForm textarea { height: 70px; resize: vertical; }
 
-/* Installation Cost Inputs */
-.install-method-group .inline-label-input {
-    border: 1px solid #f0f0f0;
-    padding: 10px;
-    border-radius: 4px;
-    align-items: center; /* Align better */
-}
+/* Inline Group Styling (Mostly Same) */
+.form-group-inline { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 8px 0; }
+.form-group-inline label { margin-bottom: 0; white-space: nowrap; flex-shrink: 0; font-weight: normal; }
+.form-group-inline input[type="number"] { margin-bottom: 0; width: 90px; max-width: 100px; flex-grow: 0; }
+.form-group-inline span { margin-left: 8px; font-size: 0.95em; }
+.calculated-value { font-weight: bold; color: #0056b3; }
 
 /* --- Window Section Styling --- */
-#windowsContainer {
-    padding: 0;
-    margin: 0;
-}
+#windowsContainer { padding: 0; margin: 0; }
+.window-section { border: 1px solid #adb5bd; border-radius: 6px; margin-bottom: 25px; background-color: #fff; overflow: hidden; }
 
-.window-section {
-    border: 1px solid #adb5bd; /* Clearer border */
-    border-radius: 6px;
-    margin-bottom: 25px;
-    background-color: #fff; /* Ensure background */
-    overflow: hidden; /* Needed for collapse animation */
-}
+.window-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: #e9ecef; border-bottom: 1px solid #adb5bd; cursor: pointer; }
+.window-header h3 { margin: 0; font-size: 1.2em; cursor: pointer; flex-grow: 1; margin-right: 10px;} /* Make title clickable too */
+.window-header > div { display: flex; align-items: center; gap: 5px; } /* Wrapper for buttons */
 
-.window-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: #e9ecef; /* Header background */
-    border-bottom: 1px solid #adb5bd;
-    cursor: pointer; /* Make header clickable */
-}
-.window-header h3 {
-    margin: 0;
-    font-size: 1.2em;
-}
+.toggle-window-btn, .delete-window-btn { background: none; border: 1px solid transparent; /* Reserve space */ font-size: 1.1em; cursor: pointer; padding: 5px; color: #495057; border-radius: 3px; line-height: 1; }
+.toggle-window-btn:hover, .delete-window-btn:hover { background-color: rgba(0,0,0,0.1); border-color: #ccc; }
+.delete-window-btn { color: #dc3545; } /* Red delete icon */
 
-.toggle-window-btn {
-    background: none;
-    border: none;
-    font-size: 1.2em;
-    cursor: pointer;
-    padding: 5px;
-    color: #495057;
-}
-.toggle-window-btn i {
-     transition: transform 0.3s ease;
-}
-.window-content.collapsed + .window-header .toggle-window-btn i, /* Icon for collapsed state */
-.window-section:not(.first-window) .window-content.collapsed + .window-header .toggle-window-btn i /* Handle initially collapsed */
-{
-    transform: rotate(-180deg);
-}
+.toggle-window-btn i { transition: transform 0.3s ease; }
+/* Rotation logic adjusted slightly for clarity */
+.window-content.collapsed + .window-header .toggle-window-btn i { transform: rotate(-180deg); }
+.window-content:not(.collapsed) + .window-header .toggle-window-btn i { transform: rotate(0deg); }
+
+.window-content { padding: 15px; border-top: none; max-height: 5000px; overflow: hidden; transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, border 0.3s ease; }
+.window-content.collapsed { max-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0;}
 
 
-.window-content {
-    padding: 15px;
-    border-top: none;
-    max-height: 5000px; /* Large enough height for animation */
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out; /* Smooth transition */
-}
+/* --- Buttons & Overall Total (Total section removed) --- */
+.add-window-btn, .generate-docs-btn { /* ... same styles ... */ }
+.add-window-btn { background-color: #007bff; color: white; /* ... */ }
+.generate-docs-btn { background-color: #28a745; color: white; /* ... */ width: 100%; }
+/* ... hover styles ... */
 
-.window-content.collapsed {
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    /* border-top: none; */ /* Might not be needed if header has border */
-}
-
-
-/* Pricing within Window */
-.window-content .pricingFieldset {
-    border-color: #ced4da; /* Match other borders */
-    padding: 15px;
-    margin-top: 15px;
-}
-.window-content .pricingFieldset legend {
-    color: #495057;
-    font-size: 1em;
-}
-.window-content .material-option {
-    padding: 10px;
-    margin-bottom: 10px;
-    gap: 8px 10px;
-}
-.window-content .material-option label { font-size: 0.9em;}
-.window-content .material-option input[type="number"] { width: 80px; }
-.window-content .material-subtotal { font-size: 1em; padding-left: 10px;}
-
-.window-total-display {
-    text-align: right;
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px dashed #ccc;
-}
-.window-total-display h4 {
-    margin: 0;
-    font-size: 1.15em;
-    color: #0056b3;
-}
-.window-total-display .calculated-value {
-     font-size: 1.1em;
- }
-
-
-/* --- Buttons & Overall Total --- */
-.add-window-btn, .generate-docs-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-    display: inline-block; /* Allow side-by-side if needed */
-    width: auto; /* Auto width */
-    margin-top: 15px;
-}
-.add-window-btn i { margin-right: 5px; }
-
-.generate-docs-btn {
-    background-color: #28a745; /* Green for generate */
-    width: 100%; /* Full width */
-}
-
-.add-window-btn:hover { background-color: #0056b3; }
-.generate-docs-btn:hover { background-color: #218838; }
-
-.overall-total-section {
-    text-align: right;
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #e9ecef;
-    border-radius: 5px;
-}
-.overall-total-section h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.2em;
-    display: inline-block;
-    margin-right: 10px;
-}
-#overallGrandTotalDisplay {
-    font-size: 1.5em; /* Larger overall total */
-    color: #dc3545; /* Red for final total */
-}
-
-/* Generate Options */
-.generate-options {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border: 1px solid #eee;
-    border-radius: 5px;
-}
+/* Generate Options (Mostly same) */
+.generate-options { margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #eee; border-radius: 5px; }
 .generate-options h3 { margin-top: 0;}
 .checkbox-group label { display: inline-block; margin-right: 20px; font-weight: normal; cursor: pointer; }
 .checkbox-group input[type="checkbox"] { margin-right: 5px; vertical-align: middle; }
 
-/* --- Output/Preview Styles --- */
+/* --- Output/Preview Styles --- (Mostly same) */
 #outputArea { margin-top: 30px; }
 .output-section { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 5px; padding: 20px; margin-bottom: 20px; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 10px; font-size: 1.3em; } /* Larger preview headings */
-.output-section h4 { font-size: 1.1em; margin-top: 15px; color: #17a2b8; } /* Sub-headings for windows in preview */
+.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 10px; font-size: 1.3em; }
+.output-section h4 { font-size: 1.1em; margin-top: 15px; color: #17a2b8; }
 .output-section p { margin: 8px 0; }
-.output-section strong { display: inline-block; min-width: 120px; color: #333; font-weight: bold;} /* Bolder labels in preview */
-.output-section .total-summary { text-align: right; margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; font-size: 1.2em; font-weight: bold;}
+.output-section strong { display: inline-block; min-width: 120px; color: #333; font-weight: bold;}
+/* Remove total summary style if not needed */
+/* .output-section .total-summary { ... } */
 
-/* Disabled input styling */
+/* --- Disabled input styling --- */
 input:disabled, select:disabled, textarea:disabled { background-color: #e9ecef; cursor: not-allowed; opacity: 0.7; }
 
 /* --- Responsive Styles for Mobile (<= 768px) --- */
 @media (max-width: 768px) {
-    body {
-        margin: 10px;
-        font-size: 14px; /* Slightly smaller base font */
-    }
-
+    body { margin: 10px; font-size: 14px; }
     h1 { font-size: 1.6em; }
     h2 { font-size: 1.3em; }
     h3 { font-size: 1.1em; }
     h4 { font-size: 1.0em; }
+    #measurementForm, .output-section { padding: 12px; }
+    .form-grid { grid-template-columns: 1fr; gap: 12px 0; }
 
+    /* Inline groups */
+    .form-group-inline { flex-direction: column; align-items: stretch; padding: 8px 0; gap: 10px; }
+    .form-group-inline label, .form-group-inline input[type="number"], .form-group-inline select, .form-group-inline span { width: 100% !important; max-width: none !important; margin-right: 0; text-align: left; margin-bottom: 5px; }
+    .form-group-inline span.calculated-value { margin-top: 5px; text-align: left; font-weight: bold; }
+    /* Radio groups */
+    .radio-group { gap: 10px; }
 
-    #measurementForm, .output-section {
-        padding: 12px; /* Reduce padding */
-    }
+    /* Window Header */
+    .window-header { padding: 8px 10px; }
+    .window-header h3 { font-size: 1.1em; }
+    .toggle-window-btn, .delete-window-btn { font-size: 1em; padding: 3px; } /* Smaller buttons */
 
-    /* Force single column grid layout */
-    .form-grid {
-        grid-template-columns: 1fr; /* Single column */
-        gap: 12px 0; /* Only row gap needed */
-    }
-
-    /* Stack inline groups vertically */
-    .form-group-inline {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 8px 0;
-        gap: 10px;
-    }
-     .form-group-inline label,
-     .form-group-inline input[type="number"],
-     .form-group-inline select,
-     .form-group-inline span {
-         width: 100% !important;
-         max-width: none !important;
-         margin-right: 0;
-         text-align: left;
-         margin-bottom: 5px;
-     }
-     .form-group-inline span#calculatedArea,
-     .window-content .dimensions-group span { /* Target area span */
-         margin-top: 5px;
-         text-align: left;
-         font-weight: bold;
-     }
-     .install-method-group .inline-label-input {
-          padding: 10px; /* Add padding back inside group */
-     }
-
-    /* Stack material options */
-    .window-content .material-option {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        padding: 10px;
-    }
-    .window-content .material-option .material-subtotal {
-        margin-left: 0;
-        width: 100%;
-        text-align: right;
-        margin-top: 8px;
-        padding-left: 0;
-    }
-    .window-content .material-option label {
-        display: block;
-        width: 100%;
-    }
-    .window-content .material-option input[type="number"] {
-          width: 100% !important;
-          max-width: none !important;
-     }
-    /* Ensure radio label is clickable */
-     .window-content .material-option > label:first-of-type {
-         display: inline-block; /* Allow radio and text on same "line" conceptually */
-         width: auto;
-         margin-left: 5px; /* Space after radio */
-     }
-      .window-content .material-option input[type="radio"] {
-         width: auto; /* Radio default width */
-         flex-shrink: 0;
-         margin-bottom: 0;
-     }
-
-
-    /* Header adjustments */
-    .window-header {
-        padding: 8px 10px;
-    }
-     .window-header h3 {
-         font-size: 1.1em;
-     }
-     .toggle-window-btn {
-         font-size: 1.1em;
-     }
-
-    .window-content { padding: 12px; } /* Adjust content padding */
-
-    /* Overall Total */
-     .overall-total-section { text-align: center; }
-     .overall-total-section h3 { display: block; margin-bottom: 8px; text-align: center;}
-     #overallGrandTotalDisplay { font-size: 1.4em; }
+    .window-content { padding: 12px; }
 
     /* Buttons */
-     .add-window-btn, .generate-docs-btn { font-size: 1em; padding: 10px 15px; }
+    .add-window-btn, .generate-docs-btn { font-size: 1em; padding: 10px 15px; }
+    .overall-notes-grid { margin-top: 15px; }
 
-    /* Output section */
-    .output-section strong { min-width: 90px; } /* Adjust label width */
+    /* Output */
+    .output-section strong { min-width: 90px; }
+}
+h1 { text-align: center; }
+hr { margin: 40px 0; border: 0; border-top: 1px solid #eee; }
+
+/* Form Styles */
+#measurementForm {
+    background-color: #fdfdfd;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+#measurementForm label {
+    /* display: block; */ /* Adjusted for inline elements */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+#measurementForm input[type="text"],
+#measurementForm input[type="date"],
+#measurementForm input[type="number"],
+#measurementForm textarea,
+#measurementForm select {
+    /* width: calc(100% - 22px); */ /* Adjusted for inline/grid */
+    padding: 8px; /* Slightly smaller padding */
+    margin-bottom: 10px; /* Smaller margin */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+ #measurementForm input[type="number"] {
+    width: 100px; /* Fixed width for number inputs */
+ }
+ #measurementForm .full-width-input,
+ #measurementForm textarea,
+ #measurementForm select {
+     width: 100%; /* Ensure select and textarea take full grid width */
+ }
+ #measurementForm .inline-label-input label {
+     display: inline-block;
+     margin-right: 5px;
+     font-weight: normal;
+ }
+ #measurementForm .inline-label-input input[type="number"] {
+     width: 80px;
+     margin-right: 15px;
+ }
+
+
+#measurementForm input[type="file"] {
+     width: calc(100% - 22px);
+     margin-bottom: 15px;
+}
+#measurementForm textarea {
+    height: 60px; /* Smaller height */
+    resize: vertical;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px 20px; /* row-gap column-gap */
+}
+.form-group {
+    /* Container for label and input in grid */
+}
+ .form-group-inline {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     margin-bottom: 10px;
+     flex-wrap: wrap; /* Allow wrapping on small screens */
+ }
+  .form-group-inline label {
+      margin-bottom: 0; /* Remove bottom margin for inline groups */
+      white-space: nowrap;
+  }
+ .form-group-inline input[type="number"] {
+     margin-bottom: 0;
+ }
+ .calculated-value {
+     font-weight: bold;
+     color: #0056b3;
+     margin-left: 10px;
+ }
+
+/* Pricing Section */
+#pricingFieldset {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+    grid-column: 1 / -1; /* Span full width */
+}
+#pricingFieldset legend {
+    font-weight: bold;
+    color: #007bff;
+    padding: 0 10px;
+}
+.material-option {
+    border: 1px dashed #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    align-items: center;
+    gap: 10px;
+}
+.material-option label { font-weight: normal; margin-right: 5px;}
+.material-option input[type="radio"] { margin-right: 5px;}
+.material-option input[type="number"] { width: 80px; }
+.material-subtotal {
+     margin-left: auto; /* Push subtotal to the right */
+     font-weight: bold;
+     padding-left: 10px; /* Ensure space */
+}
+
+
+.checkbox-group label {
+    display: inline-block;
+    margin-right: 15px;
+    font-weight: normal;
+}
+ .checkbox-group input[type="checkbox"]{
+     margin-right: 5px;
+     vertical-align: middle;
+ }
+#generateBtn {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: block; /* Make button block */
+    width: 100%; /* Full width */
+    margin-top: 10px;
+}
+#generateBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Output/Preview Styles */
+#outputArea { margin-top: 20px; }
+.output-section { background-color: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin-bottom: 20px; display: none; }
+.output-section h3 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+.output-section p { margin: 8px 0; }
+.output-section strong { display: inline-block; min-width: 120px; color: #333; }
+
+/* Disabled input styling */
+input:disabled {
+    background-color: #eee;
+    cursor: not-allowed;
 }

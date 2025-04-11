@@ -1,19 +1,53 @@
 // ui.js
-import { calculatePriceForWindow, updateOverallTotal } from './calculator.js';
+import { calculateAreaForWindow, updateOverallTotal } from './calculator.js'; // Now import calculateAreaForWindow
 
-let windowCounter = 0; // Counter for unique window identifiers, managed within this module
+let windowCounter = 0;
 
-/**
- * Toggles the collapsed state of a window section.
- * @param {Event} event - The click event object.
- */
+/** Handles showing/hiding the curtain box depth input */
+function handleCurtainBoxChange(event) {
+    const radio = event.target;
+    // Find the depth input within the same group
+    const group = radio.closest('.curtain-box-group');
+    const depthInput = group ? group.querySelector('.curtainBoxDepth') : null;
+    if (depthInput) {
+        depthInput.style.display = radio.value === 'yes' && radio.checked ? 'block' : 'none';
+    }
+}
+
+/** Deletes a window section */
+function deleteWindow(event) {
+    const button = event.target.closest('.delete-window-btn');
+    if (!button) return;
+
+    const windowSection = button.closest('.window-section');
+    if (!windowSection) return;
+
+    const sectionsContainer = document.getElementById('windowsContainer');
+    const sectionsCount = sectionsContainer ? sectionsContainer.querySelectorAll('.window-section').length : 0;
+
+    if (sectionsCount <= 1) {
+        alert('至少需要保留一個窗戶資訊區塊。');
+        return;
+    }
+
+    if (confirm(`確定要刪除「${windowSection.querySelector('.window-title')?.textContent || '此窗戶'}」嗎？`)) {
+        windowSection.remove();
+        updateOverallTotal(); // Update total (likely to 0 now)
+        // Optional: Renumber remaining windows if desired
+    }
+}
+
+
+/** Toggles the collapsed state of a window section */
 function toggleWindowCollapse(event) {
+    // Prevent delete button click from also toggling collapse
+    if (event.target.closest('.delete-window-btn')) {
+        return;
+    }
     const header = event.target.closest('.window-header');
     if (!header) return;
-
     const content = header.nextElementSibling;
     const icon = header.querySelector('.toggle-window-btn i');
-
     if (content && content.classList.contains('window-content')) {
         const isCollapsed = content.classList.toggle('collapsed');
         if (icon) {
@@ -23,66 +57,68 @@ function toggleWindowCollapse(event) {
     }
 }
 
-/**
- * Attaches necessary event listeners to a newly created window section.
- * @param {HTMLElement} windowSection - The window section element.
- */
+/** Attaches necessary event listeners to a window section */
 function attachWindowListeners(windowSection) {
+     // --- Calculation Triggers (Area only now) ---
      const inputsToRecalculate = windowSection.querySelectorAll(
-         '.windowWidth, .windowHeight, .materialUnitPrice, .installWallCost, .installCeilingCost'
+         '.windowWidth, .windowHeight' // Only these affect area now
      );
      inputsToRecalculate.forEach(input => {
          input.addEventListener('input', (e) => {
-             // Pass the section directly to the calculation function
-             calculatePriceForWindow(windowSection);
-             updateOverallTotal();
+             calculateAreaForWindow(windowSection);
+             // updateOverallTotal(); // No total to update based on area alone
          });
      });
 
-     const selectsToRecalculate = windowSection.querySelectorAll(
-         '.installMethod, .materialSelection'
-     );
-     selectsToRecalculate.forEach(select => {
-         select.addEventListener('change', (e) => {
-              // Pass the section directly to the calculation function
-             calculatePriceForWindow(windowSection);
-             updateOverallTotal();
-         });
+     // --- UI Interaction Listeners ---
+     // Curtain Box Radio change
+     const curtainBoxRadios = windowSection.querySelectorAll('.curtainBoxOption');
+     curtainBoxRadios.forEach(radio => {
+         radio.addEventListener('change', handleCurtainBoxChange);
      });
 
-     // Attach listener for collapse/expand to the header
+     // Delete button click
+     const deleteBtn = windowSection.querySelector('.delete-window-btn');
+     if (deleteBtn) {
+         deleteBtn.addEventListener('click', deleteWindow);
+     }
+
+     // Collapse/Expand click on header
      const header = windowSection.querySelector('.window-header');
      if (header) {
+         // Ensure click listener is only on header, not buttons within it (or check event target)
          header.addEventListener('click', toggleWindowCollapse);
      }
+
+     // Note: Listeners for pricing elements are removed
  }
 
 
-/**
- * Creates and adds a new window section to the form.
- */
+/** Creates and adds a new window section */
 export function addWindow() {
     windowCounter++;
     const template = document.getElementById('windowTemplate');
-    if (!template) {
-        console.error("Window template not found!");
-        return;
-    }
+    if (!template) return;
 
     const newWindowFragment = template.content.cloneNode(true);
     const newWindowSection = newWindowFragment.querySelector('.window-section');
     if (!newWindowSection) return;
 
-    // Set unique index and update title
+    // Set unique index and update title/radio names
     newWindowSection.dataset.windowIndex = windowCounter;
     const title = newWindowSection.querySelector('.window-title');
     if (title) title.textContent = `窗戶 ${windowCounter}`;
 
-    // Update radio button group names
-    const radioButtons = newWindowSection.querySelectorAll('.materialSelection');
-    radioButtons.forEach(radio => {
-        radio.name = `materialSelection_${windowCounter}`;
+    const radioGroups = ['curtainBox', 'mountType', 'materialSelection']; // materialSelection still exists in template but hidden
+    radioGroups.forEach(groupName => {
+        const radios = newWindowSection.querySelectorAll(`.${groupName}Option, .${groupName}`); // Adjust selector if needed
+        if (radios.length > 0 && radios[0].name.includes('_{{index}}')) {
+             radios.forEach(radio => {
+                radio.name = `${groupName}_${windowCounter}`;
+            });
+        }
     });
+
 
     // Attach listeners
     attachWindowListeners(newWindowSection);
@@ -92,15 +128,9 @@ export function addWindow() {
     const icon = newWindowSection.querySelector('.toggle-window-btn i');
     if (windowCounter > 1 && content) {
         content.classList.add('collapsed');
-         if (icon) {
-             icon.classList.remove('fa-chevron-up');
-             icon.classList.add('fa-chevron-down');
-         }
+         if (icon) { icon.classList.replace('fa-chevron-up','fa-chevron-down'); }
     } else {
-         if (icon) { // Ensure first window icon is correct
-            icon.classList.add('fa-chevron-up');
-            icon.classList.remove('fa-chevron-down');
-         }
+         if (icon) { icon.classList.replace('fa-chevron-down','fa-chevron-up'); }
          newWindowSection.classList.add('first-window');
     }
 
@@ -110,10 +140,10 @@ export function addWindow() {
         container.appendChild(newWindowFragment);
     }
 
-    // Optional: Scroll to new section
+    // Scroll to new section
     newWindowSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     // Initial calculation & total update
-    calculatePriceForWindow(newWindowSection); // Calculate initial (likely $0) price
-    updateOverallTotal();
+    calculateAreaForWindow(newWindowSection); // Calculate initial area
+    updateOverallTotal(); // Update total display (likely hides it)
 }
